@@ -27,12 +27,12 @@ class Generator:
         return name
 
     def generate_processed_dataset(self, path="test", suffix=""):
-        # Iterates through all the video files and export images
+
         if not os.path.exists(path):
             os.mkdir(path)
 
-        i = 0
         for f in tqdm(self.files):
+            # Iterates through all the video files and export images
             sub_directory = path + "/" + self.extract_name(f)
             if not os.path.exists(sub_directory):   # Create a directory for each video file
                 os.mkdir(sub_directory)
@@ -42,11 +42,8 @@ class Generator:
 
             for frame_no in range(processed_images.shape[0]):
                 output_filename = sub_directory + "/" + str(frame_no) + suffix
-                cv2.imwrite(output_filename, processed_images[frame_no, :, :, :])
-
-            i = i + 1
-            if i == 3:
-                break
+                frame = cv2.cvtColor(processed_images[frame_no, :, :, :], cv2.COLOR_BGR2GRAY)
+                cv2.imwrite(output_filename, frame)
 
 
 if __name__ == "__main__":

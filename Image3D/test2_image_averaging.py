@@ -54,7 +54,6 @@ class ImageProcessor:
         img[img > overbright_pixel_val] = overbright_pixel_val
         return np.uint8(img / overbright_pixel_val * 255)
 
-
     def extract_video_frames(self, video):
         no_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
         width = int(video.get(3))
@@ -66,7 +65,6 @@ class ImageProcessor:
             ret, frame = video.read()
             if ret == False:
                 break
-            # frame = self.process_frame_1(frame)
             image_collection[frame_no, :, :, :] = frame
 
         return image_collection
@@ -130,27 +128,6 @@ class ImageProcessor:
         res = np.hstack((img, equ))  # stacking images side-by-side
         return res
 
-    def process_frame_1(self, img):
-        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        lower_orange = np.array([5, 195, 205])
-        upper_orange = np.array([20, 255, 255])
-        mask = cv2.inRange(hsv, lower_orange, upper_orange)
-        im_floodfill = mask
-
-        h, w = mask.shape[:2]
-        masked = np.zeros((h + 2, w + 2), np.uint8)
-
-        cv2.floodFill(im_floodfill, masked, (0, 0), 255)
-        im_floodfill_inv = cv2.bitwise_not(im_floodfill)
-
-        im_out = img.copy()
-        im_out[:, :, 0] = im_floodfill_inv
-        im_out[:, :, 1] = im_floodfill_inv
-        im_out[:, :, 2] = im_floodfill_inv
-        im_out = img & im_out
-
-        return im_out
-
     def adjust_gamma(self, image, gamma=1.0):
         # build a lookup table mapping the pixel values [0, 255] to
         # their adjusted gamma values
@@ -160,9 +137,65 @@ class ImageProcessor:
         # apply gamma correction using the lookup table
         return cv2.LUT(image, table)
 
+    def extract_ROI(self, image_collection):
+        no_frames = image_collection.shape[0]
+        frame = image_collection[0, :, :, :]
+        mask, boundingbox = self.find_ROI(frame)
+
+        ROI_collection = np.zeros((no_frames, boundingbox[3], boundingbox[2], 3), dtype=np.uint8)
+
+        for idx in range(no_frames):
+            img = image_collection[idx, :, :, :]
+            ROI_collection[idx, :, :, :] = self.extract_bounded_region(img, mask, boundingbox)
+
+        return ROI_collection
+
+    def find_ROI(self, frame):
+        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        # Threshold of blue in HSV space
+        lower_orange = np.array([5, 195, 205])
+        upper_orange = np.array([20, 255, 255])
+        kernel = np.ones((5, 5), np.uint8)
+        mask = cv2.inRange(hsv, lower_orange, upper_orange)
+        mask = cv2.dilate(mask, kernel, iterations=1)
+
+        im_floodfill = mask
+        h, w = mask.shape[:2]
+        masked = np.zeros((h + 2, w + 2), np.uint8)
+        cv2.floodFill(im_floodfill, masked, (0, 0), 255);
+        im_floodfill_inv = cv2.bitwise_not(im_floodfill)
+
+        cnts = cv2.findContours(im_floodfill_inv, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        cnts = cnts[0] if len(cnts) == 2 else cnts[1]
+        cnts = sorted(cnts, key=cv2.contourArea, reverse=True)
+
+        x, y, w, h = cv2.boundingRect(cnts[0])
+        boundingbox = np.zeros(4).astype(int)
+        boundingbox[0] = x
+        boundingbox[1] = y
+        boundingbox[2] = w
+        boundingbox[3] = h
+
+        return im_floodfill_inv, boundingbox
+
+    def extract_bounded_region(self, frame, im_floodfill_inv, boundingbox):
+        im_out = frame.copy()
+        im_out[:, :, 0] = frame[:, :, 0] & im_floodfill_inv
+        im_out[:, :, 1] = frame[:, :, 1] & im_floodfill_inv
+        im_out[:, :, 2] = frame[:, :, 2] & im_floodfill_inv
+
+        x = boundingbox[0]
+        y = boundingbox[1]
+        w = boundingbox[2]
+        h = boundingbox[3]
+        ROI = im_out[y:y + h, x:x + w, :]
+
+        return ROI
+
     def tester3_1(self):
         video = cv2.VideoCapture(self.video_name)
         image_collection = self.extract_video_frames(video)
+        image_collection = self.extract_ROI(image_collection)
         video.release()
 
         blood_vessel_map = self.create_vessel_map(image_collection)
@@ -188,15 +221,17 @@ class ImageProcessor:
         plt.imshow(gamma_corrected, cmap='gray')
         plt.subplot(2, 3, 3)
         plt.imshow(blood_vessel_map, cmap='gray')
+        '''
         plt.subplot(2, 3, 4)
         plt.hist(img.ravel(), bins=256, range=(0, 255), fc='k', ec='k')
         plt.subplot(2, 3, 5)
         plt.hist(gamma_corrected.ravel(), bins=256, range=(0, 255), fc='k', ec='k')
         plt.subplot(2, 3, 6)
         plt.hist(blood_vessel_map.ravel(), bins=256, range=(0, 255), fc='k', ec='k')
+        '''
 
-        mng = plt.get_current_fig_manager()
-        mng.full_screen_toggle()
+        # mng = plt.get_current_fig_manager()
+        # mng.full_screen_toggle()
         plt.show()
 
 
