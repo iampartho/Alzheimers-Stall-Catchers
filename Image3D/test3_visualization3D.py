@@ -1,183 +1,102 @@
-import glob
-import math
-import cv2
-import numpy as np
-import matplotlib.pyplot as plt
 import os
-from time import time
-from matplotlib.widgets import Cursor, Button
+import matplotlib.pyplot as plt
+import numpy as np
 
 from preprocess_images import VideoProcessor
+from visualization_tools import Visualizer3D, InteractivePlotter
+from filter_images import VoxelFilter
 
-
-class Visualizer3D:
+class Tester:
 
     def __init__(self):
         self.data = []
 
-    def tester4(self):
-        '''
-        plt.subplot(2, 3, 1)
-        plt.imshow(img, cmap='gray')
-        plt.subplot(2, 3, 2)
-        plt.imshow(gamma_corrected, cmap='gray')
-        plt.subplot(2, 3, 3)
-        plt.imshow(blood_vessel_map, cmap='gray')
+    def test1(self):
+        filename = "../../micro/100109.mp4"
+        extractor = VideoProcessor(filename)
+        extracted_images = extractor.process_video(roi_extraction=False, average_frames=True)
+        os.system('find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf')
 
-        plt.subplot(2, 3, 4)
-        plt.hist(img.ravel(), bins=256, range=(0, 255), fc='k', ec='k')
-        plt.subplot(2, 3, 5)
-        plt.hist(gamma_corrected.ravel(), bins=256, range=(0, 255), fc='k', ec='k')
-        plt.subplot(2, 3, 6)
-        plt.hist(blood_vessel_map.ravel(), bins=256, range=(0, 255), fc='k', ec='k')
+        visualizer = Visualizer3D()
+        extracted_images = visualizer.convert_collection_to_grayscale(extracted_images)
+        frame = extracted_images[0, :, :]
+        # visualizer.surface3D(frame)
+        # visualizer.point_cloud(frame)
+        # analyzer = InteractivePlotter(extracted_images)
+        # analyzer.show()
+        # plt.imshow(extracted_images[:, 200, :], cmap='gray')
+        # plt.show()
 
-        # mng = plt.get_current_fig_manager()
-        # mng.full_screen_toggle()
-        plt.show()
-        '''
+    def test2_1(self):
+        filename = "../../micro/100109.mp4"
+        extractor = VideoProcessor(filename)
+        extracted_images = extractor.process_video(roi_extraction=False, average_frames=False)
+        os.system('find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf')
 
-    def surface3D(self, img):
-        height, width = img.shape
-        x = np.outer(np.arange(0, width), np.ones(height)).T
-        y = np.outer(np.flip(np.arange(0, height)), np.ones(width))
-        z = cv2.GaussianBlur(img, (5, 5), 1)
-        z = z.astype(float)/255.0
-        z = 3*np.power(z, 2) - 2*np.power(z, 3)
+        visualizer = Visualizer3D()
+        extracted_images = visualizer.convert_collection_to_grayscale(extracted_images)
+        frame = extracted_images[0, :, :]
 
-        img = img.astype(float)/255.0
-        img = 3*np.power(img, 2) - 2*np.power(img, 3)
+        filter_test = VoxelFilter()
+        image_trimmed = frame.copy()
+        height, width = frame.shape
+        image_trimmed = image_trimmed[:height, :height]
+        image_trimmed = (image_trimmed.astype(float)/255.0)*2 - 1.0
+        image_filtered = np.zeros_like(image_trimmed)
 
-        fig = plt.figure()
-        ax1 = plt.subplot(121)
-        ax2 = plt.subplot(122, projection='3d')
+        testing = False
+        row_wise = False
 
-        ax1.imshow(img, cmap='gray')
-        ax1.set_title('Original image')
-        ax2.plot_surface(x, y, z, cmap='viridis', edgecolor='none')
-        ax2.set_title('Surface plot')
-        ax2.set_xlabel('x axis')
-        ax2.set_ylabel('y axis')
-        plt.show()
+        if testing:
+            column = image_trimmed[:, 200]
+            row = image_trimmed[200, :]
+            column_filtered = filter_test.low_pass_filter(column)
+            row_filtered = filter_test.low_pass_filter(row)
 
-    def point_cloud(self, depth_map):
+            plt.subplot(2, 2, 1)
+            plt.plot(column)
+            plt.subplot(2, 2, 2)
+            plt.plot(row)
+            plt.subplot(2, 2, 3)
+            plt.plot(column_filtered)
+            plt.subplot(2, 2, 4)
+            plt.plot(row_filtered)
+            plt.show()
 
-        depth_map = cv2.GaussianBlur(depth_map, (5, 5), 1)
+        else:
+            if row_wise:
+                for pixel in range(height):
+                    row = image_trimmed[pixel, :]
+                    row_filtered = filter_test.low_pass_filter(row)
+                    image_filtered[pixel, :] = row_filtered
 
-        start_time = time()
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
+                min = np.min(image_filtered)
+                max = np.max(image_filtered)
+                span = max - min
+                image_filtered = np.uint8((image_filtered + min)/span * 255.0)
+                res = np.hstack((frame, image_filtered))
+                plt.imshow(res, cmap='gray')
+                plt.show()
 
-        rows, cols = depth_map.shape
+            else:
+                for pixel in range(height):
+                    column = image_trimmed[:, pixel]
+                    column_filtered = filter_test.low_pass_filter(column)
+                    image_filtered[:, pixel] = column_filtered
 
-        count = 0
-
-        # Cut down pixels for time purpose
-        # Computations need to be under 30s
-        pixel_cut = 3
-
-        # Iterate thorugh all the pixels
-        X = []
-        Y = []
-        Z = []
-        for x in range(cols):
-            for y in range(rows):
-                if (x % pixel_cut == 0 and y % pixel_cut == 0):
-                    if depth_map[y,x] > 100:
-                        count += 1
-                        depth = depth_map[y, x]
-                        depth = (float(depth) - 100.0) / (255.0 - 100.0)
-                        depth = 3*math.pow(depth, 2) - 2*math.pow(depth, 3)
-
-                        X.append(x)
-                        Y.append(y)
-                        Z.append(depth)
-
-        print('Finished loop, tryna plot')
-        # Axis Labels
-        ax.scatter(X, Z, Y, marker='*')
-        ax.set_xlabel('Width')
-        ax.set_ylabel('Depth')
-        ax.set_zlabel('Height')
-
-        plt.gca().invert_zaxis()
-
-        ###########################################
-        # Play with me to change view rotation!
-        elevation = 30  # Up/Down
-        azimuth = 300  # Left/Right
-        ###########################################
-
-        ax.view_init(elevation, azimuth)
-
-        plt.show()  # Uncomment if running on your local machine
-        print("Outputted {} of the {} points".format(count, 6552))
-        print("Results produced in {:04.2f} seconds".format(time() - start_time))
-
-    def convert_collection_to_grayscale(self, image_collection):
-        no_frames = image_collection.shape[0]
-        height = image_collection.shape[1]
-        width = image_collection.shape[2]
-
-        image_collection_grayscale = np.zeros((no_frames, height, width), dtype=np.uint8)
-        for frame_no in range(no_frames):
-            grayscaled = cv2.cvtColor(image_collection[frame_no, :, :, :], cv2.COLOR_BGR2GRAY)
-            image_collection_grayscale[frame_no, :, :] = grayscaled
-
-        return image_collection_grayscale
-
-    def interactive_plot(self, image_collection):
-        depth, height, width = image_collection.shape
-
-        z_coord = math.floor(depth/2)
-        y_coord = math.floor(height/2)
-        x_coord = math.floor(width/2)
-
-        blank_image = np.zeros_like(image_collection[0, :, :])
-
-        fig = plt.figure()
-        main_plot = plt.subplot(2, 2, 1)
-        pixels_vertical = plt.subplot(2, 2, 2)
-        pixels_horizontal = plt.subplot(2, 2, 3)
-        pixels_depth = plt.subplot(2, 2, 4)
-
-        main_plot.imshow(image_collection[z_coord, :, :], cmap='gray')
-        main_plot.plot([x_coord, x_coord], [0, height-1], color='blue')
-        main_plot.plot([0, width-1], [y_coord, y_coord], color='blue')
-
-        pixels_horizontal.imshow(blank_image, cmap='gray')
-        pixels_vertical.imshow(blank_image, cmap='gray')
-
-        pixels_vertical.plot(image_collection[z_coord, :, x_coord], np.arange(0, height))
-        pixels_horizontal.plot(np.arange(0, width), image_collection[z_coord, y_coord, :])
-        pixels_depth.plot(np.arange(0, depth), image_collection[:, y_coord, x_coord])
-
-        def on_click(event):
-            x1, y1 = event.xdata, event.ydata
-            print("Pixel ", x1, y1)
-
-        def on_scroll(event):
-            if event.button == 'up':
-                print('up')
-            elif event.button == 'down':
-                print('down')
-
-        fig.canvas.mpl_connect('button_press_event', on_click)
-        fig.canvas.mpl_connect('scroll_event', on_scroll)
-
-        plt.show()
-
+                min = np.min(image_filtered)
+                max = np.max(image_filtered)
+                span = max - min
+                image_filtered = np.uint8((image_filtered + min) / span * 255.0)
+                res = np.hstack((frame, image_filtered))
+                plt.imshow(res, cmap='gray')
+                plt.show()
 
 if __name__ == "__main__":
+    instance = Tester()
+    # instance.test1()
+    instance.test2_1()
 
-    filename = "../../micro/100109.mp4"
-    extractor = VideoProcessor(filename)
-    extracted_images = extractor.process_video(roi_extraction=False, average_frames=True)
-    os.system('find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf')
 
-    visualizer = Visualizer3D()
-    extracted_images = visualizer.convert_collection_to_grayscale(extracted_images)
-    frame = extracted_images[0, :, :]
-    # visualizer.surface3D(frame)
-    # visualizer.point_cloud(frame)
-    visualizer.interactive_plot(extracted_images)
+
 
