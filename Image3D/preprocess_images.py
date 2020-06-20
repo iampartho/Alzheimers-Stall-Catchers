@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-class ImageProcessor:
+class VideoProcessor:
 
     def __init__(self, name):
         self.data = []
@@ -104,7 +104,7 @@ class ImageProcessor:
         no_frames = image_collection.shape[0]
         height = image_collection.shape[1]
         width = image_collection.shape[2]
-        layers = 3
+        layers = image_collection.shape[3]
 
         vessel_map = np.zeros((height, width, layers), dtype=np.uint32)
         for frame_no in range(no_frames):
@@ -117,7 +117,7 @@ class ImageProcessor:
         no_frames = image_collection.shape[0]
         height = image_collection.shape[1]
         width = image_collection.shape[2]
-        layers = 3
+        layers = image_collection.shape[3]
         num_chunks = 1 + math.floor((no_frames - chunk_size) / frame_overlap)
 
         image_collection_averaged = np.zeros((num_chunks, height, width, layers), dtype=np.uint8)
@@ -148,12 +148,16 @@ class ImageProcessor:
         # apply gamma correction using the lookup table
         return cv2.LUT(image, table)
 
-    def process_video(self):
+    def process_video(self, roi_extraction=False, average_frames=False):
         video = cv2.VideoCapture(self.video_name)
         image_collection = self.extract_video_frames(video)
-        image_collection = self.extract_ROI(image_collection)
         video.release()
 
-        image_collection_averaged = self.create_time_chunks(image_collection, frame_overlap=5, chunk_size=10)
-        return image_collection_averaged
+        if roi_extraction:
+            image_collection = self.extract_ROI(image_collection)
+
+        if average_frames:
+            image_collection = self.create_time_chunks(image_collection, frame_overlap=5, chunk_size=10)
+
+        return image_collection
 

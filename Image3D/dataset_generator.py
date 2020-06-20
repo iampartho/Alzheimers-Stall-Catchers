@@ -1,9 +1,10 @@
 import glob
 import os
-from preprocess_images import ImageProcessor
 import cv2
 import numpy as np
 from tqdm import tqdm
+
+from preprocess_images import VideoProcessor
 
 
 class Generator:
@@ -37,8 +38,8 @@ class Generator:
             if not os.path.exists(sub_directory):   # Create a directory for each video file
                 os.mkdir(sub_directory)
 
-            extractor = ImageProcessor(f)
-            processed_images = extractor.process_video()
+            extractor = VideoProcessor(f)
+            processed_images = extractor.process_video(roi_extraction=True, average_frames=True)
 
             for frame_no in range(processed_images.shape[0]):
                 output_filename = sub_directory + "/" + str(frame_no) + suffix
@@ -52,7 +53,7 @@ if __name__ == "__main__":
     source_file_suffix = ".mp4"
 
     # Target Location of converted dataset
-    destination_directory = "micro_frames"
+    destination_directory = "../../micro_frames"
     destination_file_suffix = ".jpg"
 
     # Extract all processed frames from video files
