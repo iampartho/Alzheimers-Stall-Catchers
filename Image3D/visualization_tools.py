@@ -3,9 +3,12 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from time import time
+import os
+
+from preprocess_images import VideoProcessor
 
 
-class Visualizer3D:
+class Tool3D:
 
     def __init__(self):
         self.data = []
@@ -96,20 +99,8 @@ class Visualizer3D:
         print("Outputted {} of the {} points".format(count, 6552))
         print("Results produced in {:04.2f} seconds".format(time() - start_time))
 
-    def convert_collection_to_grayscale(self, image_collection):
-        no_frames = image_collection.shape[0]
-        height = image_collection.shape[1]
-        width = image_collection.shape[2]
 
-        image_collection_grayscale = np.zeros((no_frames, height, width), dtype=np.uint8)
-        for frame_no in range(no_frames):
-            grayscaled = cv2.cvtColor(image_collection[frame_no, :, :, :], cv2.COLOR_BGR2GRAY)
-            image_collection_grayscale[frame_no, :, :] = grayscaled
-
-        return image_collection_grayscale
-
-
-class InteractivePlotter:
+class PlotIntensity:
 
     def __init__(self, image_collection):
         self.image_collection = image_collection
@@ -127,6 +118,8 @@ class InteractivePlotter:
         self.pixels_intensity_vertical = plt.subplot(2, 2, 2)
         self.pixels_intensity_horizontal = plt.subplot(2, 2, 3)
         self.pixels_intensity_depth = plt.subplot(2, 2, 4)
+
+        self.show()
 
     def show(self):
 
@@ -169,3 +162,57 @@ class InteractivePlotter:
         self.fig.canvas.mpl_connect('scroll_event', on_scroll)
         update_plots()
         plt.show()
+
+
+class CompareChunks:
+
+    def __init__(self, image_collection, processed_collection):
+        self.image_collection = image_collection
+        self.processed_collection = processed_collection
+
+        self.depth, self.height, self.width = self.image_collection.shape
+        self.z = math.floor(self.depth / 2)
+
+        self.fig = plt.figure()
+        self.main_img = plt.subplot(1, 2, 1)
+        self.processed_img = plt.subplot(1, 2, 2)
+
+        self.show()
+
+    def show(self):
+
+        def update_plots():
+            self.main_img.cla()
+            self.processed_img.cla()
+
+            self.main_img.imshow(self.image_collection[self.z, :, :], cmap='gray')
+            self.main_img.title.set_text('Frame no ' + str(self.z))
+
+            self.processed_img.imshow(self.processed_collection[self.z, :, :], cmap='gray')
+            self.processed_img.title.set_text(' Processed Frame ' + str(self.z))
+
+            plt.draw()
+
+        def on_scroll(event):
+            if event.button == 'up':
+                if self.z < self.depth - 1:
+                    self.z = self.z + 1
+            elif event.button == 'down':
+                if self.z > 0:
+                    self.z = self.z - 1
+            print(self.z)
+            update_plots()
+
+        self.fig.canvas.mpl_connect('scroll_event', on_scroll)
+        update_plots()
+        plt.show()
+
+
+if __name__ == "__main__":
+
+    filename = "../../micro/100109.mp4"
+    extractor = VideoProcessor(filename)
+    extracted_images = extractor.process_video(roi_extraction=False, average_frames=True)
+    # os.system('find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf')
+
+    PlotIntensity(extracted_images)

@@ -39,12 +39,11 @@ class Generator:
                 os.mkdir(sub_directory)
 
             extractor = VideoProcessor(f)
-            processed_images = extractor.process_video(roi_extraction=True, average_frames=True)
+            processed_images = extractor.process_video(roi_extraction=True, filter_enabled=True, average_frames=True)
 
             for frame_no in range(processed_images.shape[0]):
                 output_filename = sub_directory + "/" + str(frame_no) + suffix
-                frame = cv2.cvtColor(processed_images[frame_no, :, :, :], cv2.COLOR_BGR2GRAY)
-                cv2.imwrite(output_filename, frame)
+                cv2.imwrite(output_filename, processed_images[frame_no, :, :])
 
 
 if __name__ == "__main__":
@@ -53,7 +52,7 @@ if __name__ == "__main__":
     source_file_suffix = ".mp4"
 
     # Target Location of converted dataset
-    destination_directory = "../../micro_frames"
+    destination_directory = "../../micro_frames_gauss_3d"
     destination_file_suffix = ".jpg"
 
     # Extract all processed frames from video files
@@ -61,4 +60,4 @@ if __name__ == "__main__":
     dataset_generator.generate_processed_dataset(destination_directory, destination_file_suffix)
 
     # Clear PyCache
-    os.system('find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf')
+    # os.system('find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf')

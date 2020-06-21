@@ -26,3 +26,9 @@
 
 8. Low pass Butterworth filter does not give good results, simple Gaussian Blur would perform better apparently. Will look into 3D filtering techniques.
 ![image_5](screenshots/filter1D.png)
+
+9.
+http://www.open3d.org/docs/release/getting_started.html
+https://docs.scipy.org/doc/scipy/reference/ndimage.html
+https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.gaussian_filter.html#scipy.ndimage.gaussian_filter
+https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.generic_filter.html#scipy.ndimage.generic_filter

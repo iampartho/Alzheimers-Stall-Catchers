@@ -3,10 +3,7 @@ import math
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-import tqdm
-import os
-import argparse
-import pandas as pd
+
 
 class ImageProcessor:
 
@@ -162,7 +159,7 @@ class ImageProcessor:
         im_floodfill = mask
         h, w = mask.shape[:2]
         masked = np.zeros((h + 2, w + 2), np.uint8)
-        cv2.floodFill(im_floodfill, masked, (0, 0), 255);
+        cv2.floodFill(im_floodfill, masked, (0, 0), 255)
         im_floodfill_inv = cv2.bitwise_not(im_floodfill)
 
         cnts = cv2.findContours(im_floodfill_inv, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
