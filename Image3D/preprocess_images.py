@@ -44,6 +44,12 @@ class ImageProcessor3D:
     def gaussian_filter_3D(self, image_collection, input_sigma=1, filter_order=0):
         return gaussian_filter(image_collection, sigma=input_sigma, order=filter_order)
 
+    def grayscale_collection_to_binary(self, image_collection, threshold):
+        binaries = image_collection.copy()
+        binaries[image_collection >= threshold] = 255
+        binaries[image_collection < threshold] = 0
+        return binaries
+
     def create_time_chunks(self, image_collection_grayscale, frame_overlap=5, chunk_size=10):
         # Take all the frames from video and export some averaged frames of given chunk size
         no_frames = image_collection_grayscale.shape[0]
@@ -181,7 +187,7 @@ class VideoProcessor:
             image_collection = ImageProcessor3D().gaussian_filter_3D(image_collection, input_sigma=1, filter_order=0)
 
         if average_frames:
-            image_collection = ImageProcessor3D().create_time_chunks(image_collection, frame_overlap=5, chunk_size=10)
+            image_collection = ImageProcessor3D().create_time_chunks(image_collection, frame_overlap=2, chunk_size=5)
 
         return image_collection
 

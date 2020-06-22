@@ -2,10 +2,15 @@ import math
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from time import time
-import os
+import pandas as pd
 
-from preprocess_images import VideoProcessor
+from sklearn.cluster import SpectralClustering
+from sklearn.cluster import DBSCAN
+from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import normalize
+from sklearn.decomposition import PCA
+
+from preprocess_images import VideoProcessor, ImageProcessor3D
 
 
 class Tool3D:
@@ -44,60 +49,6 @@ class Tool3D:
         ax2.set_xlabel('x axis')
         ax2.set_ylabel('y axis')
         plt.show()
-
-    def point_cloud(self, depth_map):
-
-        depth_map = cv2.GaussianBlur(depth_map, (5, 5), 1)
-
-        start_time = time()
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-
-        rows, cols = depth_map.shape
-
-        count = 0
-
-        # Cut down pixels for time purpose
-        # Computations need to be under 30s
-        pixel_cut = 3
-
-        # Iterate thorugh all the pixels
-        X = []
-        Y = []
-        Z = []
-        for x in range(cols):
-            for y in range(rows):
-                if (x % pixel_cut == 0 and y % pixel_cut == 0):
-                    if depth_map[y,x] > 100:
-                        count += 1
-                        depth = depth_map[y, x]
-                        depth = (float(depth) - 100.0) / (255.0 - 100.0)
-                        depth = 3*math.pow(depth, 2) - 2*math.pow(depth, 3)
-
-                        X.append(x)
-                        Y.append(y)
-                        Z.append(depth)
-
-        print('Finished loop, tryna plot')
-        # Axis Labels
-        ax.scatter(X, Z, Y, marker='*')
-        ax.set_xlabel('Width')
-        ax.set_ylabel('Depth')
-        ax.set_zlabel('Height')
-
-        plt.gca().invert_zaxis()
-
-        ###########################################
-        # Play with me to change view rotation!
-        elevation = 30  # Up/Down
-        azimuth = 300  # Left/Right
-        ###########################################
-
-        ax.view_init(elevation, azimuth)
-
-        plt.show()  # Uncomment if running on your local machine
-        print("Outputted {} of the {} points".format(count, 6552))
-        print("Results produced in {:04.2f} seconds".format(time() - start_time))
 
 
 class Interactive:
@@ -186,9 +137,9 @@ class Interactive:
         update_plots()
         plt.show()
 
-    def show_point_cloud(self):
-        self.point_cloud = np.zeros_like(self.image_collection[:, :, :])
+    def show_point_cloud(self, threshold=150, clustering=False, filter_outliers=False, name=''):
         self.cloud_plot = self.fig.add_subplot(111, projection='3d')
+        self.z = threshold
 
         def update_cloud():
             if self.z >= 256:
@@ -196,16 +147,60 @@ class Interactive:
             elif self.z < 0:
                 self.z = 0
 
-            self.plot_screen.cla()
+            self.cloud_plot.cla()
 
-            self.plot_screen.imshow(self.image_collection[self.z, :, :], cmap='gray')
+            # Extract valid points
+            binarized_stack = ImageProcessor3D().grayscale_collection_to_binary(self.image_collection, threshold=self.z)
+            cloud = np.argwhere(binarized_stack == 255)
+
+            X = cloud[:, 2]
+            Y = cloud[:, 1]
+            Z = cloud[:, 0]
+
+            self.cloud_plot.title.set_text('Video ' + name + ' Threshold: ' + str(self.z))
+
+            if clustering:
+                #DBSCAN Clustering
+                cloud_normalized = pd.DataFrame(cloud)
+                dbscan_model = DBSCAN(eps=1.0, min_samples=1).fit(cloud_normalized)
+                labels = dbscan_model.labels_
+
+                if filter_outliers:
+                    valid_cluster_points = 40
+                    (unique, counts) = np.unique(labels, return_counts=True)
+                    print(str(unique.shape[0]) + ' clusters')
+                    for cluster_no in range(unique.shape[0]):
+                        if counts[cluster_no] <= valid_cluster_points:
+                            cloud[labels == cluster_no, :] = [0, 0, 0]
+
+                self.cloud_plot.scatter(X, Z, Y, marker='.', c=labels, cmap='viridis')
+
+            else:
+                self.cloud_plot.scatter(X, Z, Y, marker='.', color='#990000')
+
+            self.cloud_plot.set_xlabel('Width')
+            self.cloud_plot.set_ylabel('Depth')
+            self.cloud_plot.set_zlabel('Height')
+
+            limit = max(self.height, self.width, self.depth)
+            self.cloud_plot.set_xlim([0, limit])
+            self.cloud_plot.set_ylim([0, limit])
+            self.cloud_plot.set_zlim([0, limit])
+
+            plt.gca().invert_zaxis()
+            ###########################################
+            # Play with me to change view rotation!
+            elevation = 30  # Up/Down
+            azimuth = 300  # Left/Right
+            ###########################################
+            self.cloud_plot.view_init(elevation, azimuth)
+
 
             plt.draw()
 
-        self.fig.canvas.mpl_connect('button_press_event', lambda event: self.callback_click(event, update_cloud))
+        self.fig.canvas.mpl_connect('scroll_event', lambda event: self.callback_scroll(event, update_cloud))
         update_cloud()
         plt.show()
-
 
 
 if __name__ == "__main__":
