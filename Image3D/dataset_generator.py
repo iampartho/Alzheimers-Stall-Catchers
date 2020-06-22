@@ -48,11 +48,11 @@ class Generator:
 
 if __name__ == "__main__":
     # Location of original dataset
-    source_directory = "../../micro/"
+    source_directory = "../../dataset/test/"
     source_file_suffix = ".mp4"
 
     # Target Location of converted dataset
-    destination_directory = "../../micro_frames_gauss_3d"
+    destination_directory = "../../trial_2_grayscale_average_gaussian/test_frames_gauss"
     destination_file_suffix = ".jpg"
 
     # Extract all processed frames from video files

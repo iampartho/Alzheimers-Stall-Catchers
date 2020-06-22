@@ -100,30 +100,68 @@ class Tool3D:
         print("Results produced in {:04.2f} seconds".format(time() - start_time))
 
 
-class PlotIntensity:
+class Interactive:
 
     def __init__(self, image_collection):
         self.image_collection = image_collection
 
         self.depth, self.height, self.width = self.image_collection.shape
-
         self.z = math.floor(self.depth / 2)
         self.y = math.floor(self.height / 2)
         self.x = math.floor(self.width / 2)
 
-        self.blank_frame = np.zeros_like(self.image_collection[0, :, :])
-
         self.fig = plt.figure()
+
+    def callback_click(self, event, update_function):
+        self.x, self.y = math.floor(event.xdata), math.floor(event.ydata)
+        update_function()
+
+    def callback_scroll(self, event, update_function):
+        if event.button == 'up':
+            self.z = self.z + 1
+        elif event.button == 'down':
+            self.z = self.z - 1
+        update_function()
+
+    def compare_with_chunk(self, processed_collection):
+        self.processed_collection = processed_collection
+        self.main_img = plt.subplot(1, 2, 1)
+        self.processed_img = plt.subplot(1, 2, 2)
+
+        def update_figure():
+            if self.z >= self.depth:
+                self.z = self.depth - 1
+            elif self.z < 0:
+                self.z = 0
+
+            self.main_img.cla()
+            self.processed_img.cla()
+
+            self.main_img.imshow(self.image_collection[self.z, :, :], cmap='gray')
+            self.main_img.title.set_text('Frame no ' + str(self.z))
+
+            self.processed_img.imshow(self.processed_collection[self.z, :, :], cmap='gray')
+            self.processed_img.title.set_text(' Processed Frame ' + str(self.z))
+
+            plt.draw()
+
+        self.fig.canvas.mpl_connect('scroll_event', lambda event: self.callback_scroll(event, update_figure))
+        update_figure()
+        plt.show()
+
+    def plot_intensities(self):
+        self.blank_frame = np.zeros_like(self.image_collection[0, :, :])
         self.main_plot = plt.subplot(2, 2, 1)
         self.pixels_intensity_vertical = plt.subplot(2, 2, 2)
         self.pixels_intensity_horizontal = plt.subplot(2, 2, 3)
         self.pixels_intensity_depth = plt.subplot(2, 2, 4)
 
-        self.show()
-
-    def show(self):
-
         def update_plots():
+            if self.z >= self.depth:
+                self.z = self.depth - 1
+            elif self.z < 0:
+                self.z = 0
+
             self.main_plot.cla()
             self.pixels_intensity_vertical.cla()
             self.pixels_intensity_horizontal.cla()
@@ -143,69 +181,31 @@ class PlotIntensity:
 
             plt.draw()
 
-        def on_click(event):
-            self.x, self.y = math.floor(event.xdata), math.floor(event.ydata)
-            print(self.x, self.y)
-            update_plots()
-
-        def on_scroll(event):
-            if event.button == 'up':
-                if self.z < self.depth - 1:
-                    self.z = self.z + 1
-            elif event.button == 'down':
-                if self.z > 0:
-                    self.z = self.z - 1
-            print(self.z)
-            update_plots()
-
-        self.fig.canvas.mpl_connect('button_press_event', on_click)
-        self.fig.canvas.mpl_connect('scroll_event', on_scroll)
+        self.fig.canvas.mpl_connect('button_press_event', lambda event: self.callback_click(event, update_plots))
+        self.fig.canvas.mpl_connect('scroll_event', lambda event: self.callback_scroll(event, update_plots))
         update_plots()
         plt.show()
 
+    def show_point_cloud(self):
+        self.point_cloud = np.zeros_like(self.image_collection[:, :, :])
+        self.cloud_plot = self.fig.add_subplot(111, projection='3d')
 
-class CompareChunks:
+        def update_cloud():
+            if self.z >= 256:
+                self.z = 255
+            elif self.z < 0:
+                self.z = 0
 
-    def __init__(self, image_collection, processed_collection):
-        self.image_collection = image_collection
-        self.processed_collection = processed_collection
+            self.plot_screen.cla()
 
-        self.depth, self.height, self.width = self.image_collection.shape
-        self.z = math.floor(self.depth / 2)
-
-        self.fig = plt.figure()
-        self.main_img = plt.subplot(1, 2, 1)
-        self.processed_img = plt.subplot(1, 2, 2)
-
-        self.show()
-
-    def show(self):
-
-        def update_plots():
-            self.main_img.cla()
-            self.processed_img.cla()
-
-            self.main_img.imshow(self.image_collection[self.z, :, :], cmap='gray')
-            self.main_img.title.set_text('Frame no ' + str(self.z))
-
-            self.processed_img.imshow(self.processed_collection[self.z, :, :], cmap='gray')
-            self.processed_img.title.set_text(' Processed Frame ' + str(self.z))
+            self.plot_screen.imshow(self.image_collection[self.z, :, :], cmap='gray')
 
             plt.draw()
 
-        def on_scroll(event):
-            if event.button == 'up':
-                if self.z < self.depth - 1:
-                    self.z = self.z + 1
-            elif event.button == 'down':
-                if self.z > 0:
-                    self.z = self.z - 1
-            print(self.z)
-            update_plots()
-
-        self.fig.canvas.mpl_connect('scroll_event', on_scroll)
-        update_plots()
+        self.fig.canvas.mpl_connect('button_press_event', lambda event: self.callback_click(event, update_cloud))
+        update_cloud()
         plt.show()
+
 
 
 if __name__ == "__main__":
@@ -215,4 +215,4 @@ if __name__ == "__main__":
     extracted_images = extractor.process_video(roi_extraction=False, average_frames=True)
     # os.system('find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf')
 
-    PlotIntensity(extracted_images)
+    Interactive(extracted_images).plot_intensities()
