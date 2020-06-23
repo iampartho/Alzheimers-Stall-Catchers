@@ -37,7 +37,7 @@ class ImageProcessor:
 
 
 class ImageProcessor3D:
-
+    # All functions work on collection of grayscale images
     def __init__(self):
         self.data = []
 
@@ -69,6 +69,12 @@ class ImageProcessor3D:
             image_collection_averaged[chunk_no, :, :] = averaged_frame
 
         return image_collection_averaged
+
+    def point_cloud_from_collecton(self, image_collection, percentile=95):
+        thresh = int(np.percentile(image_collection.ravel(), percentile))
+        binarized_stack = self.grayscale_collection_to_binary(image_collection, threshold=thresh)
+        cloud = np.argwhere(binarized_stack == 255)
+        return cloud
 
 
 class VideoProcessor:

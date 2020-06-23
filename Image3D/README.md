@@ -27,8 +27,23 @@
 8. Low pass Butterworth filter does not give good results, simple Gaussian Blur would perform better apparently. Will look into 3D filtering techniques.
 ![image_5](screenshots/filter1D.png)
 
-9.
+9. Some reliable progress
+
+    - Import all the video frames > Extract ROIs > 3D Gaussian filter (sigma 1, order 0) > average over 5 frames, in 2 frame interval of start position
+    - On the 3D array, find three values for 99, 95, 90 th percentile and apply thresholding on that value over the 3D array. 3 Point clouds are generated
+    - In each point cloud, apply DBSCAN clustering, remove any clusters having points less than 1/100th of the largest cluster
+    - It is visually possible to classify stalls by comparing the three point clouds
+
+It is possible to reverse the point cloud to generate binary images for each layer of the point cloud.
+
+
+- Point Cloud Basic Work (test3_visualization3D)
 http://www.open3d.org/docs/release/getting_started.html
-https://docs.scipy.org/doc/scipy/reference/ndimage.html
 https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.gaussian_filter.html#scipy.ndimage.gaussian_filter
-https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.generic_filter.html#scipy.ndimage.generic_filter
+
+- 3D Point Cloud Operations
+https://paperswithcode.com/task/3d-point-cloud-classification
+
+- 3D convolution
+https://towardsdatascience.com/step-by-step-implementation-3d-convolutional-neural-network-in-keras-12efbdd7b130
+https://www.kaggle.com/daavoo/3d-mnist

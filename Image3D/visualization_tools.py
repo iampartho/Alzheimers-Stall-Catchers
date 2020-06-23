@@ -137,9 +137,8 @@ class Interactive:
         update_plots()
         plt.show()
 
-    def show_point_cloud(self, threshold=150, clustering=False, filter_outliers=False, name=''):
+    def show_point_cloud(self, percentile=95, clustering=False, filter_outliers=False, name=''):
         self.cloud_plot = self.fig.add_subplot(111, projection='3d')
-        self.z = threshold
 
         def update_cloud():
             if self.z >= 256:
@@ -149,15 +148,15 @@ class Interactive:
 
             self.cloud_plot.cla()
 
-            # Extract valid points
-            binarized_stack = ImageProcessor3D().grayscale_collection_to_binary(self.image_collection, threshold=self.z)
-            cloud = np.argwhere(binarized_stack == 255)
+            # Generate point cloud
+            cloud = ImageProcessor3D().point_cloud_from_collecton(self.image_collection, percentile=percentile)
 
             X = cloud[:, 2]
             Y = cloud[:, 1]
             Z = cloud[:, 0]
 
-            self.cloud_plot.title.set_text('Video ' + name + ' Threshold: ' + str(self.z))
+            plot_title = 'Video ' + name + ' Percentile:' + str(percentile) + ' Threshold: ' + str(self.z)
+            self.cloud_plot.title.set_text(plot_title)
 
             if clustering:
                 #DBSCAN Clustering
@@ -166,11 +165,12 @@ class Interactive:
                 labels = dbscan_model.labels_
 
                 if filter_outliers:
-                    valid_cluster_points = 40
                     (unique, counts) = np.unique(labels, return_counts=True)
                     print(str(unique.shape[0]) + ' clusters')
+                    max_cluster_size = np.max(counts)
                     for cluster_no in range(unique.shape[0]):
-                        if counts[cluster_no] <= valid_cluster_points:
+                        print(cluster_no, counts[cluster_no])
+                        if counts[cluster_no] <= max_cluster_size / 100:
                             cloud[labels == cluster_no, :] = [0, 0, 0]
 
                 self.cloud_plot.scatter(X, Z, Y, marker='.', c=labels, cmap='viridis')
