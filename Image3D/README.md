@@ -12,11 +12,11 @@
 
 5. Replaced the binary images from partho's training set with averaged grayscale images and trained model. The results are quite poor
 	
-- We could try making a 3D map of the blood vessels in the video then use those 3d maps through some 3D convolutional network
-
-- We could sample blood vessels from non ROI locations, and use the samples to train a generative adversarial network. The GAN network will predict how a blood vessel should look like. Say for example, we take blood vessels, and remove some regions from the images - representing blocks. Then we show the edited image,  and teach the network that output should look like the original image when it sees the edited image. The network should be able to learn how to fill the gaps in an image - namely filling up empty spaces. Then when testing with original ROIs, we can ask the network how much the input differs from the predicted image. Larger difference indicates higher chance of block
-
-- Partho suggested that we could build an autoencoder that will do necessary noise removal and brightness correction in any input image. Then the corrected image will be used to train the final stall catching network. For training the autoencoder, we have to manually provide required hyperparameters for each video file that transforms the original video and does the corrections/transformations. Then we have to train the autoencoder on those hyperparameters. This suggestion seems like a reasonable approach. 
+    - We could try making a 3D map of the blood vessels in the video then use those 3d maps through some 3D convolutional network
+    
+    - We could sample blood vessels from non ROI locations, and use the samples to train a generative adversarial network. The GAN network will predict how a blood vessel should look like. Say for example, we take blood vessels, and remove some regions from the images - representing blocks. Then we show the edited image,  and teach the network that output should look like the original image when it sees the edited image. The network should be able to learn how to fill the gaps in an image - namely filling up empty spaces. Then when testing with original ROIs, we can ask the network how much the input differs from the predicted image. Larger difference indicates higher chance of block
+    
+    - Partho suggested that we could build an autoencoder that will do necessary noise removal and brightness correction in any input image. Then the corrected image will be used to train the final stall catching network. For training the autoencoder, we have to manually provide required hyperparameters for each video file that transforms the original video and does the corrections/transformations. Then we have to train the autoencoder on those hyperparameters. This suggestion seems like a reasonable approach. 
 
 6. Did some investigating with pixel intensity values. From the plots of a single row, column or a column taken in direction of depth, the presence of vessels can be observed from concurrent high pixel values. I have an idea for filtering the images with a low pass filter in any one of the three directions.
 ![image_3](screenshots/pixel_intensity.png)
@@ -33,20 +33,35 @@
     - On the 3D array, find three values for 99, 95, 90 th percentile and apply thresholding on that value over the 3D array. 3 Point clouds are generated
     - In each point cloud, apply DBSCAN clustering, remove any clusters having points less than 1/100th of the largest cluster
     - It is visually possible to classify stalls by comparing the three point clouds
+    - It is possible to reverse the point cloud to generate binary images for each layer of the point cloud.
 
-It is possible to reverse the point cloud to generate binary images for each layer of the point cloud.
+10. Tried <a href="https://www.kaggle.com/daavoo/3d-mnist">MNIST3D</a> example. Exported point clouds for 3 percentile values to .h5 files and generated voxel grid data of size samplesx3x32x64x64 for feeding to the network. Results are not satisfactory yet, and the RAM usage is unsuallay high.
+
+    - Pixel density based analysis
+    - Graph CNN
+    - 2 way clustering
+    - Generative adversarial network
+    - Cloud optimization(Voxel grid downsampling, Convex Hull, Cloud to mesh)
+    - Fast Marching Algorithm, Snake Algorithm
+    - 
+    
+### Links
+1. Point Cloud Materials
+    - http://www.open3d.org/
+    - https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.gaussian_filter.html#scipy.ndimage.gaussian_filter
+    - https://paperswithcode.com/task/3d-point-cloud-classification
+    - https://github.com/charlesq34/pointnet
+    - https://github.com/charlesq34/pointnet2
+    - https://github.com/WangYueFt/dgcnn
+    - https://towardsdatascience.com/5-step-guide-to-generate-3d-meshes-from-point-clouds-with-python-36bad397d8ba
+
+2. 3D convolution
+    - https://towardsdatascience.com/step-by-step-implementation-3d-convolutional-neural-network-in-keras-12efbdd7b130
+    - https://www.kaggle.com/daavoo/3d-mnist
 
 
-- Point Cloud Basic Work (test3_visualization3D)
-http://www.open3d.org/docs/release/getting_started.html
-https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.gaussian_filter.html#scipy.ndimage.gaussian_filter
 
-- 3D Point Cloud Operations
-https://paperswithcode.com/task/3d-point-cloud-classification
-
-- 3D convolution
-https://towardsdatascience.com/step-by-step-implementation-3d-convolutional-neural-network-in-keras-12efbdd7b130
-https://www.kaggle.com/daavoo/3d-mnist
+<!--
 
 Depth min: 10.0 average: 29.342642767819925 max: 91.0
 42.0 49.0 67.0
@@ -54,3 +69,5 @@ Height min: 12.0 average: 54.506044185077116 max: 384.0
 92.0 112.0 160.03999999999996
 Width min: 16.0 average: 56.716965402250935 max: 512.0
 94.0 116.0 180.03999999999996
+
+-->
