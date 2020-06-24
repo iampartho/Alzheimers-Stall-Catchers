@@ -1,7 +1,9 @@
 import math
 import cv2
 import numpy as np
+import pandas as pd
 from scipy.ndimage import gaussian_filter
+from sklearn.cluster import DBSCAN
 
 
 class ImageProcessor:
@@ -70,11 +72,46 @@ class ImageProcessor3D:
 
         return image_collection_averaged
 
-    def point_cloud_from_collecton(self, image_collection, percentile=95):
-        thresh = int(np.percentile(image_collection.ravel(), percentile))
-        binarized_stack = self.grayscale_collection_to_binary(image_collection, threshold=thresh)
+    def point_cloud_from_collecton(self, image_collection, threshold=100, filter_outliers=False):
+        binarized_stack = self.grayscale_collection_to_binary(image_collection, threshold=threshold)
         cloud = np.argwhere(binarized_stack == 255)
-        return cloud
+
+        # DBSCAN Clustering
+        cloud_normalized = pd.DataFrame(cloud)
+        dbscan_model = DBSCAN(eps=1.0, min_samples=1).fit(cloud_normalized)
+        labels = dbscan_model.labels_
+
+        if filter_outliers:
+            (unique, counts) = np.unique(labels, return_counts=True)
+            max_cluster_size = np.max(counts)
+            for cluster_no in range(unique.shape[0]):
+                # delete clusters having low number of members
+                if counts[cluster_no] <= max_cluster_size / 100:
+                    cloud = cloud[labels != cluster_no, :]
+                    labels = labels[labels != cluster_no]
+
+        return cloud, labels
+
+    def voxel_grid_from_cloud(self, cloud, out_depth=50, out_height=128, out_width=128):
+        in_depth = np.max(cloud[:, 0])
+        in_height = np.max(cloud[:, 1])
+        in_width = np.max(cloud[:, 2])
+
+        voxel_grid = np.zeros((out_depth, out_height, out_width), dtype=np.uint8)
+
+        if in_depth >= out_depth:
+            depth_transform_ratio = out_depth / (in_depth + 1)
+            cloud[:, 0] = np.uint32(cloud[:, 0].astype(float) * depth_transform_ratio)
+        if in_height >= out_height:
+            height_transform_ratio = out_height / (in_height + 1)
+            cloud[:, 1] = np.uint32(cloud[:, 1].astype(float) * height_transform_ratio)
+        if in_width >= out_width:
+            width_transform_ratio = out_width / (in_width + 1)
+            cloud[:, 2] = np.uint32(cloud[:, 2].astype(float) * width_transform_ratio)
+
+        voxel_grid[cloud[:, 0], cloud[:, 1], cloud[:, 2]] = 255
+
+        return voxel_grid
 
 
 class VideoProcessor:

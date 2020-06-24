@@ -2,13 +2,6 @@ import math
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas as pd
-
-from sklearn.cluster import SpectralClustering
-from sklearn.cluster import DBSCAN
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import normalize
-from sklearn.decomposition import PCA
 
 from preprocess_images import VideoProcessor, ImageProcessor3D
 
@@ -139,44 +132,27 @@ class Interactive:
 
     def show_point_cloud(self, percentile=95, clustering=False, filter_outliers=False, name=''):
         self.cloud_plot = self.fig.add_subplot(111, projection='3d')
+        self.z = percentile
 
         def update_cloud():
-            if self.z >= 256:
-                self.z = 255
+            if self.z >= 100:
+                self.z = 100
             elif self.z < 0:
                 self.z = 0
 
             self.cloud_plot.cla()
 
             # Generate point cloud
-            cloud = ImageProcessor3D().point_cloud_from_collecton(self.image_collection, percentile=percentile)
+            thresh = int(np.percentile(self.image_collection.ravel(), self.z))
+            cloud, labels = ImageProcessor3D().point_cloud_from_collecton(self.image_collection, threshold=thresh, filter_outliers=filter_outliers)
 
-            X = cloud[:, 2]
-            Y = cloud[:, 1]
-            Z = cloud[:, 0]
-
-            plot_title = 'Video ' + name + ' Percentile:' + str(percentile) + ' Threshold: ' + str(self.z)
+            plot_title = 'Video ' + name + ' Percentile:' + str(self.z) + ' Threshold: ' + str(thresh)
             self.cloud_plot.title.set_text(plot_title)
 
             if clustering:
-                #DBSCAN Clustering
-                cloud_normalized = pd.DataFrame(cloud)
-                dbscan_model = DBSCAN(eps=1.0, min_samples=1).fit(cloud_normalized)
-                labels = dbscan_model.labels_
-
-                if filter_outliers:
-                    (unique, counts) = np.unique(labels, return_counts=True)
-                    print(str(unique.shape[0]) + ' clusters')
-                    max_cluster_size = np.max(counts)
-                    for cluster_no in range(unique.shape[0]):
-                        print(cluster_no, counts[cluster_no])
-                        if counts[cluster_no] <= max_cluster_size / 100:
-                            cloud[labels == cluster_no, :] = [0, 0, 0]
-
-                self.cloud_plot.scatter(X, Z, Y, marker='.', c=labels, cmap='viridis')
-
+                self.cloud_plot.scatter(cloud[:, 2], cloud[:, 0], cloud[:, 1], marker='.', c=labels, cmap='viridis')
             else:
-                self.cloud_plot.scatter(X, Z, Y, marker='.', color='#990000')
+                self.cloud_plot.scatter(cloud[:, 2], cloud[:, 0], cloud[:, 1], marker='.', color='#990000')
 
             self.cloud_plot.set_xlabel('Width')
             self.cloud_plot.set_ylabel('Depth')
@@ -188,13 +164,9 @@ class Interactive:
             self.cloud_plot.set_zlim([0, limit])
 
             plt.gca().invert_zaxis()
-            ###########################################
-            # Play with me to change view rotation!
             elevation = 30  # Up/Down
             azimuth = 300  # Left/Right
-            ###########################################
             self.cloud_plot.view_init(elevation, azimuth)
-
 
             plt.draw()
 

@@ -47,3 +47,10 @@ https://paperswithcode.com/task/3d-point-cloud-classification
 - 3D convolution
 https://towardsdatascience.com/step-by-step-implementation-3d-convolutional-neural-network-in-keras-12efbdd7b130
 https://www.kaggle.com/daavoo/3d-mnist
+
+Depth min: 10.0 average: 29.342642767819925 max: 91.0
+42.0 49.0 67.0
+Height min: 12.0 average: 54.506044185077116 max: 384.0
+92.0 112.0 160.03999999999996
+Width min: 16.0 average: 56.716965402250935 max: 512.0
+94.0 116.0 180.03999999999996
