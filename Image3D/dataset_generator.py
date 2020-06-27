@@ -45,7 +45,7 @@ class Generator:
             if testing == True:
                 break
 
-    def generate_point_cloud_dataset(self, src_path, dst_path, testing = False):
+    def generate_point_cloud_dataset(self, src_path, dst_path, testing=False):
         src_suffix = ".mp4"
         dst_suffix = ".h5"
 
@@ -140,15 +140,15 @@ def create_voxel_dataset_with_labels():
 
 if __name__ == "__main__":
     # Location of original dataset
-    src_directory = "../../dataset/micro/"
+    src_directory = "../../dataset/test/"
 
     # Target Location of converted dataset
-    dst_directory = "../../micro_extracted"
+    dst_directory = "../../test_cloud"
 
     # Generator().generate_processed_dataset(src_directory, dst_directory, testing=True)
-    # Generator().generate_point_cloud_dataset(src_directory, dst_directory, testing=True)
+    Generator().generate_point_cloud_dataset(src_directory, dst_directory, testing=False)
     # create_voxel_dataset_with_labels()
 
-    os.system('find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf')
+    # os.system('find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf')
 
     print("Finished")
