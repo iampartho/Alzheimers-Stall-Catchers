@@ -9,19 +9,48 @@ Following table summarizes all the change in pipeline
 | 1 | Baseline Model | SGD(lr = 1e-3) | CrossEntropy | 32 X 64 X 64 | -- | -- |
 | 2 | Added two more dense layers | Adam(lr = 5e-3) | CrossEntropy | 32 X 64 X 64 | -- | -- |
 | 3 | '' | Adam(lr = 5e-3,w_d = 1e-4) | CrossEntropy | 32 X 64 X 64 | -- | -- |
+| 4 | '' | Adam(lr = 5e-3,w_d = 1e-4) | CrossEntropy | 32 X 64 X 64 | -- | Balance Batch added in training |
+| 5 | ResNet 3D or ResNet Mixed Convolution or ResNet (2+1)D | Adam(lr = 5e-3,w_d = 1e-4) | CrossEntropy | 32 X 64 X 64 | -- | -- |
 
 
-
-- Serial 1  (Baseline Pipeline) : [3DptCloudofAlzheimer_Baseline.ipynb](3DptCloudofAlzheimer_Baseline.ipynb) contains the baseline pipeline code
-- Serial 2 : [3DptCloudofAlzheimer_modified.ipynb](3DptCloudofAlzheimer_modified.ipynb) contains that modified code
-- Serial 3 : To add weight decay (adding L2 regularization to reduce overfitting) change code in **Model Hyperparameters** section like 
+- **Serial 1**  (Baseline Pipeline) : [3DptCloudofAlzheimer_Baseline.ipynb](3DptCloudofAlzheimer_Baseline.ipynb) contains the baseline pipeline code
+- **Serial 2** : [3DptCloudofAlzheimer_modified.ipynb](3DptCloudofAlzheimer_modified.ipynb) contains that modified code
+- **Serial 3** : To add weight decay (adding L2 regularization to reduce overfitting) change code in **Model Hyperparameters** section like 
 ```bash
 optimizer = torch.optim.Adam(model.parameters(), lr=5e-3, weight_decay=1e-4)
 ```
+- **Serial 4** : Adding balance batch in training can be easy as we need to import library from **sampler.py** and change code in **Dataloader** section
+```bash
+train_loader = torch.utils.data.DataLoader(train,sampler=BalancedBatchSampler(train), batch_size = batch_size, num_workers=4)
+```
+N.B : If you face any problem at the end of one epoch then you can add this line at the end of one epoch(end line of epoch loop)
 
-- Serial 4 :
-
-- Baseline Model (Baseline pipeline) : 
+- **Serial 5** :
+To implement ResNet 3D variants we can change code in **Model Code** section like
+```bash
+from torchvision.models.video import r3d_18
+from torchvision.models.video import r2plus1d_18
+#from torchvision.models.video import mc3_18
+#which model we want we have to select it
+model = r3d_18(pretrained = True)
+model = r2plus1d_18(pretrained = True)
+model = mc3_18(pretrained = True)
+model.fc.out_features = 2
+```
+For inference code [Inference_3DptCloud.ipynb](Inference_3DptCloud.ipynb) we have to change similary the **Model Code** section
+```bash
+from torchvision.models.video import r3d_18
+from torchvision.models.video import r2plus1d_18
+from torchvision.models.video import mc3_18
+#select which model weight you have
+model = r3d_18(pretrained = False)
+model = r2plus1d_18(pretrained = False)
+model = mc3_18(pretrained = False)
+model.fc.out_features = 2
+model = model.to(device)
+model.load_state_dict(torch.load(checkpoint_model))
+```
+All details regarding pytorch models documentation can be found <a href="https://pytorch.org/docs/stable/torchvision/models.html">here</a>
 
 
 
