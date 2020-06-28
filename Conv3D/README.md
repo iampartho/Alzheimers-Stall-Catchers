@@ -10,7 +10,7 @@ Following table summarizes all the change in pipeline
 | 2 | Added two more dense layers | Adam(lr = 5e-3) | CrossEntropy | 32 X 64 X 64 | -- | -- |
 | 3 | '' | Adam(lr = 5e-3,w_d = 1e-4) | CrossEntropy | 32 X 64 X 64 | -- | -- |
 | 4 | '' | Adam(lr = 5e-3,w_d = 1e-4) | CrossEntropy | 32 X 64 X 64 | -- | Adding Balance Batch in training |
-
+| 5 | ResNet 3D 18 | Adam(lr = 5e-3,w_d = 1e-4) | CrossEntropy | 32 X 64 X 64 | -- | -- |
 
 
 - Serial 1  (Baseline Pipeline) : [3DptCloudofAlzheimer_Baseline.ipynb](3DptCloudofAlzheimer_Baseline.ipynb) contains the baseline pipeline code
@@ -25,6 +25,25 @@ train_loader = torch.utils.data.DataLoader(train,sampler=BalancedBatchSampler(tr
 ```
 
 N.B : If training stops somehow at the end of one epoch then add this line at the end of each epoch( in last line of epoch loop)
+- Serial 4 : To implement ResNet 3D as model we can use torchvision.models library. We have to change code in **Model Code** section
+```bash
+from torchvision.models.video import r3d_18
+model = r3d_18(pretrained = True)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = model.to(device)
+model.fc.out_features = 2
+```
+For changing the [Inference_3DptCloud.ipynb](inference code) we have to change similarly in **Model Code** section
+
+```bash
+from torchvision.models.video import r3d_18
+model = r3d_18(pretrained = False)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = model.to(device)
+model.fc.out_features = 2
+model.load_state_dict(torch.load(checkpoint_model))
+```
+
 
 
 
