@@ -32,7 +32,7 @@ To implement ResNet 3D variants we can change code in **Model Code** section lik
 ```bash
 from torchvision.models.video import r3d_18
 from torchvision.models.video import r2plus1d_18
-#from torchvision.models.video import mc3_18
+from torchvision.models.video import mc3_18
 #which model we want we have to select it
 model = r3d_18(pretrained = True)
 model = r2plus1d_18(pretrained = True)
