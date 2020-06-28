@@ -10,6 +10,13 @@ Following table summarizes all the change in pipeline
 | 2 | Added two more dense layers | Adam(lr = 5e-3) | CrossEntropy | 32 X 64 X 64 | -- | -- |
 
 
+- Serial [1]  (Baseline Pipeline) : [3DptCloudofAlzheimer_Baseline.ipynb]3DptCloudofAlzheimer_Baseline.ipynb contains the baseline pipeline code
+- Serial [2] : [3DptCloudofAlzheimer_modified.ipynb]3DptCloudofAlzheimer_modified.ipynb contains that modified code
+
+
 - Baseline Model (Baseline pipeline) : 
 
+```bash
+3DptCloudofAlzheimer_Baseline.ipynb
+```
 
