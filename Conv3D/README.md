@@ -21,6 +21,8 @@ optimizer = torch.optim.Adam(model.parameters(), lr=5e-3, weight_decay=1e-4)
 ```
 - **Serial 4** : Adding balance batch in training can be easy as we need to import library from **sampler.py** and change code in **Dataloader** section
 ```bash
+from sampler import BalancedBatchSampler  #importing library
+
 train_loader = torch.utils.data.DataLoader(train,sampler=BalancedBatchSampler(train), batch_size = batch_size, num_workers=4)
 ```
 N.B : If you face any problem at the end of one epoch then you can add this line at the end of one epoch(end line of epoch loop)
