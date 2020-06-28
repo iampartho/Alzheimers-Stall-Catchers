@@ -9,6 +9,7 @@ Following table summarizes all the change in pipeline
 | 1 | Baseline Model | SGD(lr = 1e-3) | CrossEntropy | 32 X 64 X 64 | -- | -- |
 | 2 | Added two more dense layers | Adam(lr = 5e-3) | CrossEntropy | 32 X 64 X 64 | -- | -- |
 | 3 | '' | Adam(lr = 5e-3,w_d = 1e-4) | CrossEntropy | 32 X 64 X 64 | -- | -- |
+| 4 | '' | Adam(lr = 5e-3,w_d = 1e-4) | CrossEntropy | 32 X 64 X 64 | -- | Adding Balance Batch in training |
 
 
 
@@ -18,8 +19,14 @@ Following table summarizes all the change in pipeline
 ```bash
 optimizer = torch.optim.Adam(model.parameters(), lr=5e-3, weight_decay=1e-4)
 ```
+- Serial 4 : To add balance batch change code in **Dataloader** section 
+```bash
+train_loader = torch.utils.data.DataLoader(train,sampler=BalancedBatchSampler(train), batch_size = batch_size, num_workers=4)
+```
 
-- Serial 4 :
+N.B : If training stops somehow at the end of one epoch then add this line at the end of each epoch( in last line of epoch loop)
+
+
 
 - Baseline Model (Baseline pipeline) : 
 
