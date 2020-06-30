@@ -52,6 +52,9 @@ model.fc.out_features = 2
 model = model.to(device)
 model.load_state_dict(torch.load(checkpoint_model))
 ```
+Or you can use [Inference_3DptCloud_3D_Model.ipynb](Inference_3DptCloud_3D_Model.ipynb) for 3D model inference.
+
+
 All details regarding pytorch models documentation can be found <a href="https://pytorch.org/docs/stable/torchvision/models.html">here</a>
 
 
