@@ -11,7 +11,7 @@ Following table summarizes all the change in pipeline
 | 3 | '' | Adam(lr = 5e-3,w_d = 1e-4) | CrossEntropy | 32 X 64 X 64 | -- | -- |
 | 4 | '' | Adam(lr = 5e-3,w_d = 1e-4) | CrossEntropy | 32 X 64 X 64 | -- | Balance Batch added in training |
 | 5 | ResNet 3D or ResNet Mixed Convolution or ResNet (2+1)D | Adam(lr = 5e-3,w_d = 1e-4) | CrossEntropy | 32 X 64 X 64 | -- | -- |
-
+| 6 | ResNet 3D | Adam(lr = 1e-3,w_d = 1e-4) | " | 32 X 64 X 64 | Normalization, Augmentation, Changed DataLoader format | --
 
 - **Serial 1**  (Baseline Pipeline) : [3DptCloudofAlzheimer_Baseline.ipynb](3DptCloudofAlzheimer_Baseline.ipynb) contains the baseline pipeline code
 - **Serial 2** : [3DptCloudofAlzheimer_modified.ipynb](3DptCloudofAlzheimer_modified.ipynb) contains that modified code
@@ -54,6 +54,38 @@ model.load_state_dict(torch.load(checkpoint_model))
 ```
 Or you can use [Inference_3DptCloud_3D_Model.ipynb](Inference_3DptCloud_3D_Model.ipynb) for 3D model inference.
 
+- **Serial 6** :
+
+Custom Dataset Class:
+```
+import torch
+
+class VoxelDataset(torch.utils.data.Dataset):
+    def __init__(self, files_list, source_path):
+        self.list_IDs = list(files_list.keys())
+        self.labels = files_list
+        self.path = source_path
+
+    def __len__(self):
+        return len(self.list_IDs)
+
+    def __getitem__(self, index):
+        ID = self.list_IDs[index]
+        original_name = ID.replace(".mp4", "")
+        f = self.path + original_name + ".pt"
+
+        X = torch.load(f)
+
+        y = self.labels[ID]
+        y = torch.tensor(int(y))
+
+        return X, y
+```
+
+Augmentation: Change to False for disabling augmentation
+```
+train_list = VoxelTensor(pc_path).save(files_list=train_list, dst_path=train_files_directory, dim=dimension, augment=True)
+```
 
 All details regarding pytorch models documentation can be found <a href="https://pytorch.org/docs/stable/torchvision/models.html">here</a>
 

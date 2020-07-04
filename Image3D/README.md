@@ -43,7 +43,16 @@
     - Generative adversarial network
     - Cloud optimization(Voxel grid downsampling, Convex Hull, Cloud to mesh)
     - Fast Marching Algorithm, Snake Algorithm
-    - 
+
+11. Currently running RESNET3D 18 model, on point cloud data:
+
+    - First attempt was a) Voxel size 32*64*64 b) Validation mcc 0.44 c) Leaderboard mcc 0.2408
+    - Second attempt a) Voxel size 32*64*64, normalized voxel 0-1, made some improvement in voxel generation b) Validation mcc 0.49 and very stable during training c) Leaderboard mcc 0.307
+    - Third attempt a) Used weights from previous submission as model checkpoint, data volume 4 times by rotation along z axis b) Validation mcc 0.515 c) Leaderboard mcc 0.3716
+    - Fourth attempt a) Voxel size 50x128x128 (normalized), training incredibly slow b) Validation mcc 0.328 c) Leaderboard mcc 0.2172
+    
+12. Partho created a 9 stream network, each stream for a specific angle projection of point cloud depth map. Created the dataset and gave it to Partho
+
     
 ### Links
 1. Point Cloud Materials
