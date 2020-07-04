@@ -7,7 +7,7 @@ import numpy as np
 from tqdm import tqdm
 
 from preprocess_images import VideoProcessor, ImageProcessor3D
-
+from point_cloud import PointCloud
 
 class Generator:
 
@@ -128,26 +128,50 @@ class Generator:
 
         return X, y
 
+    def projections_from_cloud(self, src_path, dst_path, testing=False):
+        src_suffix = ".h5"
+        dst_suffix = ".jpg"
 
-def create_voxel_dataset_with_labels():
+        files = [f for f in glob.glob(src_path + "*" + src_suffix, recursive=True)]
 
-    src_path = "./data/point_cloud/"
-    labels_file = "./data/labels.csv"
+        if not os.path.exists(dst_path):
+            os.mkdir(dst_path)
 
-    grid_shape = [3, 32, 64, 64]
-    X, y = Generator().voxel_grid_from_csv(src_path, labels_file, grid_shape)
+        for f in tqdm(files):
+            sample_name = self.extract_name(f, src_path, src_suffix)
+            sub_directory = dst_path + "/" + sample_name
+            if not os.path.exists(sub_directory):   # Create a directory for each video file
+                os.mkdir(sub_directory)
+
+            hf = h5py.File(f, 'r')
+            cloud = hf['cloud2'][:]
+            hf.close()
+
+            for i in range(9):
+                if i == 0:
+                    projection = PointCloud().cloud_projection(cloud=cloud, depth=50, height=128, width=128)
+                else:
+                    cloud_rotated = PointCloud().rotate(cloud=cloud, pos=i)
+                    projection = PointCloud().cloud_projection(cloud=cloud_rotated, depth=50, height=128, width=128)
+
+                projection = cv2.resize(projection, (224, 224), interpolation=cv2.INTER_AREA)
+                output_filename = sub_directory + "/" + str(i) + dst_suffix
+                cv2.imwrite(output_filename, projection)
+
+            if testing == True:
+                break
 
 
 if __name__ == "__main__":
     # Location of original dataset
-    src_directory = "../../dataset/test/"
+    src_directory = "../../dataset/point_cloud/"
 
     # Target Location of converted dataset
-    dst_directory = "../../test"
+    dst_directory = "../../micro_frames"
 
     # Generator().generate_processed_dataset(src_directory, dst_directory, testing=True)
-    Generator().generate_point_cloud_dataset(src_directory, dst_directory, testing=False)
-    # create_voxel_dataset_with_labels()
+    # Generator().generate_point_cloud_dataset(src_directory, dst_directory, testing=False)
+    Generator().projections_from_cloud(src_directory, dst_directory, testing=False)
 
     # os.system('find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf')
 

@@ -9,6 +9,7 @@ from tqdm import tqdm
 import open3d as o3d
 
 from preprocess_images import VideoProcessor, ImageProcessor3D
+from point_cloud import PointCloud
 
 
 class Tester:
@@ -24,14 +25,6 @@ class Tester:
         thresh = int(np.percentile(image_collection.ravel(), 95))
         cloud, labels = ImageProcessor3D().point_cloud_from_collecton(image_collection, threshold=thresh,
                                                                       filter_outliers=True)
-        center = [np.max(cloud[:, 0])/2, np.max(cloud[:, 1])/2, np.max(cloud[:, 2])/2]
-
-        def point_cloud(cloud):
-            pcd = o3d.geometry.PointCloud()
-            pcd.points = o3d.utility.Vector3dVector(cloud)
-            o3d.visualization.draw_geometries([pcd])
-
-            return pcd
 
         def downsample(pcd):
             print("Downsampled")
@@ -73,16 +66,26 @@ class Tester:
 
             o3d.visualization.draw_geometries([bpa_mesh])
 
-        def rotate(pcd, center):
-            trans = o3d.geometry.TriangleMesh.create_coordinate_frame()
-            pcd_copy = copy.deepcopy(pcd)
-            R = trans.get_rotation_matrix_from_xyz((np.pi / 2, 0, np.pi / 4))
-            pcd_copy.rotate(R, center=(center[0], center[1], center[2]))
-            o3d.visualization.draw_geometries([pcd, pcd_copy])
+    def test2(self):
+        filename = "../../dataset/micro/100109.mp4"
+        extractor = VideoProcessor(filename)
+        image_collection = extractor.process_video(roi_extraction=True, filter_enabled=True, average_frames=True)
 
-        pcd = point_cloud(cloud)
-        rotate(pcd, center)
+        thresh = int(np.percentile(image_collection.ravel(), 95))
+        cloud, labels =ImageProcessor3D().point_cloud_from_collecton(image_collection, threshold=thresh,
+                                                                      filter_outliers=True)
+
+        for i in range(9):
+            if i == 0:
+                projection = PointCloud().cloud_projection(cloud=cloud, depth=50, height=128, width=128)
+            else:
+                cloud_rotated = PointCloud().rotate(cloud=cloud, pos=i)
+                projection = PointCloud().cloud_projection(cloud=cloud_rotated, depth=50, height=128, width=128)
+            plt.subplot(3, 3, i+1)
+            plt.imshow(projection, cmap='gray')
+
+        plt.show()
 
 
 if __name__ == "__main__":
-    Tester().test1()
+    Tester().test2()
