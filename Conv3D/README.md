@@ -52,7 +52,8 @@ model.fc.out_features = 2
 model = model.to(device)
 model.load_state_dict(torch.load(checkpoint_model))
 ```
-Or you can use [Inference_3DptCloud_3D_Model.ipynb](Inference_3DptCloud_3D_Model.ipynb) for 3D model inference.
+Or you can use [Inference_3DptCloud_3D_Model.ipynb](Inference_3DptCloud_3D_Model.ipynb) for 3D model inference. All details regarding pytorch models documentation can be found <a href="https://pytorch.org/docs/stable/torchvision/models.html">here</a>
+
 
 - **Serial 6** :
 
@@ -87,7 +88,6 @@ Augmentation: Change to False for disabling augmentation
 train_list = VoxelTensor(pc_path).save(files_list=train_list, dst_path=train_files_directory, dim=dimension, augment=True)
 ```
 
-All details regarding pytorch models documentation can be found <a href="https://pytorch.org/docs/stable/torchvision/models.html">here</a>
 
 
 
