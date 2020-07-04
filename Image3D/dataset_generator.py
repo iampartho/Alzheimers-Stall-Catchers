@@ -143,7 +143,7 @@ if __name__ == "__main__":
     src_directory = "../../dataset/test/"
 
     # Target Location of converted dataset
-    dst_directory = "../../test_cloud"
+    dst_directory = "../../test"
 
     # Generator().generate_processed_dataset(src_directory, dst_directory, testing=True)
     Generator().generate_point_cloud_dataset(src_directory, dst_directory, testing=False)
