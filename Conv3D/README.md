@@ -11,7 +11,8 @@ Following table summarizes all the change in pipeline
 | 3 | '' | Adam(lr = 5e-3,w_d = 1e-4) | CrossEntropy | 32 X 64 X 64 | -- | -- |
 | 4 | '' | Adam(lr = 5e-3,w_d = 1e-4) | CrossEntropy | 32 X 64 X 64 | -- | Balance Batch added in training |
 | 5 | ResNet 3D or ResNet Mixed Convolution or ResNet (2+1)D | Adam(lr = 5e-3,w_d = 1e-4) | CrossEntropy | 32 X 64 X 64 | -- | -- |
-| 6 | ResNet 3D | Adam(lr = 1e-3,w_d = 1e-4) | " | 32 X 64 X 64 | Normalization, Augmentation, Changed DataLoader format | --
+| 6 | ResNet 3D | Adam(lr = 1e-3,w_d = 1e-4) | " | 32 X 64 X 64 | Normalization, Augmentation, Changed DataLoader format | -- |
+| 7 | -- | Ranger(lr = 1e-3,w_d = 1e-4) | " | 32 X 64 X 64 | -- | -- |
 
 - **Serial 1**  (Baseline Pipeline) : [3DptCloudofAlzheimer_Baseline.ipynb](3DptCloudofAlzheimer_Baseline.ipynb) contains the baseline pipeline code
 - **Serial 2** : [3DptCloudofAlzheimer_modified.ipynb](3DptCloudofAlzheimer_modified.ipynb) contains that modified code
@@ -87,7 +88,12 @@ Augmentation: Change to False for disabling augmentation
 ```
 train_list = VoxelTensor(pc_path).save(files_list=train_list, dst_path=train_files_directory, dim=dimension, augment=True)
 ```
-
+- **Serial 7** :
+To use ranger optimizer(RAdam and LookAhead) change this in the section **Model Hyperparameters**
+```
+from ranger import Ranger 
+optimizer = Ranger(model.parameters(), lr=learning_rate, weight_decay=1e-4)
+```
 
 
 
