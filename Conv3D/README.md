@@ -89,8 +89,8 @@ Augmentation: Change to False for disabling augmentation
 train_list = VoxelTensor(pc_path).save(files_list=train_list, dst_path=train_files_directory, dim=dimension, augment=True)
 ```
 - **Serial 7** :
-To use ranger optimizer(RAdam and LookAhead) change this in the section **Model Hyperparameters**
-```
+To use ranger optimizer(RAdam and LookAhead) change this in the section **Model Hyperparameters** . Must keep ranger.py in the directory.
+``` 
 from ranger import Ranger 
 optimizer = Ranger(model.parameters(), lr=learning_rate, weight_decay=1e-4)
 ```
