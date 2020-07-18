@@ -18,7 +18,7 @@ class Tester:
 
     def test2_3(self):
         checkpoint_enabled = True
-        checkpoint = '146244'
+        checkpoint = '100109'
         flag = False
 
         source_directory = "../../dataset/micro/"
@@ -86,7 +86,7 @@ class Tester:
         # visualization_tools.Interactive(extracted_images).plot_intensities()
         # plt.hist(extracted_images.ravel(), bins=256, range=(0, 255), fc='k', ec='k')
         # plt.show()
-        visualization_tools.Interactive(image_collection).show_point_cloud(percentile=95, clustering=True, filter_outliers=True)
+        visualization_tools.Interactive(image_collection).show_point_cloud(percentile=99, clustering=True, filter_outliers=True)
 
     def test2_2_1(self):
         filename = "../../dataset/micro/187558.mp4"
@@ -108,8 +108,8 @@ class Tester:
 
 if __name__ == "__main__":
     instance = Tester()
+    # instance.test2_2()
     instance.test2_2()
-    # instance.test2_3()
     # instance.test2_3_1()
 
     # os.system('find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf')

@@ -77,10 +77,10 @@ class Tester:
 
         for i in range(9):
             if i == 0:
-                projection = PointCloud().cloud_projection(cloud=cloud, depth=50, height=128, width=128)
+                projection = PointCloud().cloud_projection(cloud=cloud)
             else:
                 cloud_rotated = PointCloud().rotate(cloud=cloud, pos=i)
-                projection = PointCloud().cloud_projection(cloud=cloud_rotated, depth=50, height=128, width=128)
+                projection = PointCloud().cloud_projection(cloud=cloud_rotated)
             plt.subplot(3, 3, i+1)
             plt.imshow(projection, cmap='gray')
 
