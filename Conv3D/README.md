@@ -141,7 +141,7 @@ print("Total number of trainable parameters: ", pytorch_total_params)
 pretrain = torch.load(checkpoint_model, map_location=torch.device('cpu'))
 #assert opt.arch == pretrain['arch']
 model.load_state_dict(pretrain['state_dict'])
-model.module.fc = nn.Linear(model.module.fc.in_features, 2)
+model.module.fc = nn.Linear(model.module.fc.in_features, num_classes)
 model.module.fc = model.module.fc.cuda()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
