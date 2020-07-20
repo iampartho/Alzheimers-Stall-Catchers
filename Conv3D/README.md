@@ -14,6 +14,7 @@ Following table summarizes all the change in pipeline
 | 6 | ResNet18 3D | Adam(lr = 1e-3,w_d = 1e-4) | " | 32 X 64 X 64 (bigger size) | Normalization, Augmentation, Changed DataLoader format | -- |
 | 7 | -- | Ranger(lr = 1e-3,w_d = 1e-4) | " | 32 X 64 X 64 | -- | -- |
 | 8 | 3D ResNet34,50,101,152,200, 3D ResNeXt50,101 | -- | " | 32 X 64 X 64 | -- | -- |
+| 9 | 3D ResNets , 3D ResNeXts Pretrained weight | -- | " | 32 X 64 X 64 | -- | -- |
 
 - **Serial 1**  (Baseline Pipeline) : [3DptCloudofAlzheimer_Baseline.ipynb](3DptCloudofAlzheimer_Baseline.ipynb) contains the baseline pipeline code
 - **Serial 2** : [3DptCloudofAlzheimer_modified.ipynb](3DptCloudofAlzheimer_modified.ipynb) contains that modified code
@@ -119,3 +120,32 @@ model = resnet.resnet101(
                 sample_duration=32)
 ``` 
 To know more details you can see <a href="https://github.com/aia39/Efficient-3DCNNs">this</a> repo. 
+
+- **Serial 9** :
+If we want to leverage 3D models then loading pretrained weight is the convenient way to start. To use pretrained weight(trained on Kinetics) we have to change as following. Change the section **Model Code** to
+``` 
+#For resnet 10/ 18/ 50/ 101/ 152/ 200
+import resnet
+model = resnet.resnet101(
+                num_classes=600,
+                shortcut_type='B',
+                sample_size=64,
+                sample_duration=32)
+                
+model = model.cuda()
+model = nn.DataParallel(model, device_ids=None)
+pytorch_total_params = sum(p.numel() for p in model.parameters() if
+                        p.requires_grad)
+print("Total number of trainable parameters: ", pytorch_total_params)
+
+pretrain = torch.load(checkpoint_model, map_location=torch.device('cpu'))
+#assert opt.arch == pretrain['arch']
+model.load_state_dict(pretrain['state_dict'])
+model.module.fc = nn.Linear(model.module.fc.in_features, num_classes)
+model.module.fc = model.module.fc.cuda()
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = model.to(device)
+```
+
+Note that, you can find pretrained weight file <a href="https://drive.google.com/drive/folders/1eggpkmy_zjb62Xra6kQviLa67vzP_FR8">here</a>. For ResNet 101 use "kinetics_resnet_101_RGB_16_best.pth" and assign it to "checkpoint_model" variable. Similarly applicable for ResNeXt model.
