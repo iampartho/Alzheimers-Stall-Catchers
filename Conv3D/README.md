@@ -234,7 +234,7 @@ setInterval(ClickConnect,60000)
 ```
 
 - **Serial 11** :
-Using Automatic Mixed Precision to change precision to cope up with bigger data.
+Using Automatic Mixed Precision to change precision to cope up with bigger data. Use [3DptCloudimageofAlzheimer_networks_amp.ipynb](3DptCloudimageofAlzheimer_networks_amp.ipynb) for amp implementation. Code is organized to train in 2 stages where first stage is high lr, low weight_decay, augmentation disabled, with balance batch and 2nd stage is opposite of stage one. Here , ```IS_FIRST_STAGE = True```  and ```RESUME_TRAINING = False``` is for first stage where opposite for 2nd stage. Keep ```use_amp = True``` to use automatic mixed precision.
 
 
 
