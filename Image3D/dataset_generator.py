@@ -246,10 +246,10 @@ class Generator:
 
 if __name__ == "__main__":
     # Location of original dataset
-    src_directory = "../../dataset/test/"
+    src_directory = "../../dataset/new/nonstall_7/"
 
     # Target Location of converted dataset
-    dst_directory = "../../test_tensor"
+    dst_directory = "../../micro_7"
 
     # Generator().generate_processed_dataset(src_directory, dst_directory, testing=True)
     # Generator().generate_point_cloud_dataset(src_directory, dst_directory, testing=False)

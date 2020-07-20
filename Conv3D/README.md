@@ -15,6 +15,7 @@ Following table summarizes all the change in pipeline
 | 7 | -- | Ranger(lr = 1e-3,w_d = 1e-4) | " | 32 X 64 X 64 | -- | -- |
 | 8 | 3D ResNet34,50,101,152,200, 3D ResNeXt50,101 | -- | " | 32 X 64 X 64 | -- | -- |
 | 9 | 3D ResNets , 3D ResNeXts Pretrained weight | -- | " | 32 X 64 X 64 | -- | -- |
+|10 | RESNET101 | Adam lr=5e-4 w_d=8e-4 | CrossEntropy | 32 X 64 X 64 | Point Cloud Mask applied to Imageset, Reshape to fit to dimension, Augmentation | Manual selection of LR, WD, Multistage Training
 
 - **Serial 1**  (Baseline Pipeline) : [3DptCloudofAlzheimer_Baseline.ipynb](3DptCloudofAlzheimer_Baseline.ipynb) contains the baseline pipeline code
 - **Serial 2** : [3DptCloudofAlzheimer_modified.ipynb](3DptCloudofAlzheimer_modified.ipynb) contains that modified code
@@ -149,3 +150,85 @@ model = model.to(device)
 ```
 
 Note that, you can find pretrained weight file <a href="https://drive.google.com/drive/folders/1eggpkmy_zjb62Xra6kQviLa67vzP_FR8">here</a>. For ResNet 101 use "kinetics_resnet_101_RGB_16_best.pth" and assign it to "checkpoint_model" variable. Similarly applicable for ResNeXt model.
+
+
+- **Serial 10** :
+
+Train Code: 3DptCloudofAlzheimer_networks.ipynb
+
+Inference: Inference_3D_networks.ipynb
+
+Data importing now occurs in partitions due to large size of dataset
+```
+!jar -xf "/content/drive/My Drive/SayeedColab/Alzheimer Data/micro_1.zip";
+print("partition 1 imported")
+```
+
+Dataloader directly loads saved tensor files so training time has a significant improvement
+```
+X = torch.load(sequence_path + ".pt")
+```
+
+Augmentation now happens during training. While running dataloader, you can mention batch size, augmentation enabling and augmentation volume
+```
+batch_size = 128
+
+split_number = 0
+
+augmentation_enabled = True     # Set to false for no augmentation
+augment_volume = 16             # How many times data should be augmented
+
+if augmentation_enabled ==  True:       # If augmentation enabled, resize batch to fit in gpu
+  batch_size = int(batch_size/augment_volume)
+```
+
+Augmenter Function takes a minibatch and returns an augmentated batch of augment_volume times data
+```
+def augment(images, labels, augment_volume=2):
+
+  [instances, channel, depth, height, width] = images.shape
+
+  images_aug = torch.zeros((instances*augment_volume, channel, depth, height, width))
+  labels_aug = torch.zeros(instances*augment_volume)
+
+  for aug_type in range(augment_volume):
+    augmented = im_aug(images, aug_type)
+    
+    images_aug[aug_type*instances:(aug_type+1)*instances, :, :, :, :] = augmented
+    labels_aug[aug_type*instances:(aug_type+1)*instances] = labels
+
+  return images_aug.float(), labels_aug.long()
+```
+
+Model being used currently resnet101
+```
+import resnet
+model = resnet.resnet101(
+                num_classes=2,
+                shortcut_type='B',
+                sample_size=64,
+                sample_duration=32)
+
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = model.to(device)
+
+model.load_state_dict(torch.load(checkpoint_model))  # comment for training from scratch
+```
+
+**TIP:** This training could take several hours depending on how many iterations you chose in the .cfg file. You will want to let this run as you sleep or go to work for the day, etc. However, Colab Cloud Service kicks you off it's VMs if you are idle for too long (30-90 mins).
+
+To avoid this hold (CTRL + SHIFT + i) at the same time to open up the inspector view on your browser.
+
+Paste the following code into your console window and hit **Enter**
+```
+function ClickConnect(){
+console.log("Working"); 
+document
+  .querySelector('#top-toolbar > colab-connect-button')
+  .shadowRoot.querySelector('#connect')
+  .click() 
+}
+setInterval(ClickConnect,60000)
+```
+
