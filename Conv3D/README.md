@@ -15,7 +15,8 @@ Following table summarizes all the change in pipeline
 | 7 | -- | Ranger(lr = 1e-3,w_d = 1e-4) | " | 32 X 64 X 64 | -- | -- |
 | 8 | 3D ResNet34,50,101,152,200, 3D ResNeXt50,101 | -- | " | 32 X 64 X 64 | -- | -- |
 | 9 | 3D ResNets , 3D ResNeXts Pretrained weight | -- | " | 32 X 64 X 64 | -- | -- |
-|10 | RESNET101 | Adam lr=5e-4 w_d=8e-4 | CrossEntropy | 32 X 64 X 64 | Point Cloud Mask applied to Imageset, Reshape to fit to dimension, Augmentation | Manual selection of LR, WD, Multistage Training
+|10 | RESNET101 | Adam lr=5e-4 w_d=8e-4 | CrossEntropy | 32 X 64 X 64 | Point Cloud Mask applied to Imageset, Reshape to fit to dimension, Augmentation | Manual selection of LR, WD, Multistage Training |
+| 11 | '' | '' | '' | 32 X 64 X 64 | -- | Using Automatic Mixed Precision |
 
 - **Serial 1**  (Baseline Pipeline) : [3DptCloudofAlzheimer_Baseline.ipynb](3DptCloudofAlzheimer_Baseline.ipynb) contains the baseline pipeline code
 - **Serial 2** : [3DptCloudofAlzheimer_modified.ipynb](3DptCloudofAlzheimer_modified.ipynb) contains that modified code
@@ -231,4 +232,9 @@ document
 }
 setInterval(ClickConnect,60000)
 ```
+
+- **Serial 11** :
+Using Automatic Mixed Precision to change precision to cope up with bigger data. Use [3DptCloudimageofAlzheimer_networks_amp.ipynb](3DptCloudimageofAlzheimer_networks_amp.ipynb) for amp implementation. Code is organized to train in 2 stages where first stage is high lr, low weight_decay, augmentation disabled, with balance batch and 2nd stage is opposite of stage one. Here , ```IS_FIRST_STAGE = True```  and ```RESUME_TRAINING = False``` is for first stage where opposite for 2nd stage. Keep ```use_amp = True``` to use automatic mixed precision.
+
+
 
