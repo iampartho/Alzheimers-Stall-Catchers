@@ -17,6 +17,7 @@ Following table summarizes all the change in pipeline
 | 9 | 3D ResNets , 3D ResNeXts Pretrained weight | -- | " | 32 X 64 X 64 | -- | -- |
 |10 | RESNET101 | Adam lr=5e-4 w_d=8e-4 | CrossEntropy | 32 X 64 X 64 | Point Cloud Mask applied to Imageset, Reshape to fit to dimension, Augmentation | Manual selection of LR, WD, Multistage Training |
 | 11 | '' | '' | '' | 32 X 64 X 64 | -- | Using Automatic Mixed Precision |
+| 12 | '' | '' | Class Balance Weight | 32 X 64 X 64 | -- | -- |
 
 - **Serial 1**  (Baseline Pipeline) : [3DptCloudofAlzheimer_Baseline.ipynb](3DptCloudofAlzheimer_Baseline.ipynb) contains the baseline pipeline code
 - **Serial 2** : [3DptCloudofAlzheimer_modified.ipynb](3DptCloudofAlzheimer_modified.ipynb) contains that modified code
@@ -236,5 +237,47 @@ setInterval(ClickConnect,60000)
 - **Serial 11** :
 Using Automatic Mixed Precision to change precision to cope up with bigger data. Use [3DptCloudimageofAlzheimer_networks_amp.ipynb](3DptCloudimageofAlzheimer_networks_amp.ipynb) for amp implementation. Code is organized to train in 2 stages where first stage is high lr, low weight_decay, augmentation disabled, with balance batch and 2nd stage is opposite of stage one. Here , ```IS_FIRST_STAGE = True```  and ```RESUME_TRAINING = False``` is for first stage where opposite for 2nd stage. Keep ```use_amp = True``` to use automatic mixed precision.
 
+- **Serial 12** :
+As this is hugely imbalanced data so we shifted our loss to 'Class Balance Loss' which can tackle imbalancy in dataset. To replace existing loss with this loss you can change the previous loss function like following:
+**Step 1 :**
+Add the Class balance loss function:
+```
+import torch.nn.functional as F
+def CB_loss(labels, logits, samples_per_cls, no_of_classes, loss_type, beta, gamma):
+    effective_num = 1.0 - np.power(beta, samples_per_cls)
+    weights = (1.0 - beta) / np.array(effective_num)
+    weights = weights / np.sum(weights) * no_of_classes
 
+    labels_one_hot = F.one_hot(labels, no_of_classes).float()
+
+    weights = torch.tensor(weights).float().to(device)
+    weights = weights.unsqueeze(0)
+    weights = weights.repeat(labels_one_hot.shape[0],1) * labels_one_hot
+    weights = weights.sum(1)
+    weights = weights.unsqueeze(1)
+    weights = weights.repeat(1,no_of_classes)
+
+    if loss_type == "focal":
+        cb_loss = focal_loss(labels_one_hot, logits, weights, gamma)
+    elif loss_type == "sigmoid":
+        cb_loss = F.binary_cross_entropy_with_logits(input = logits,target = labels_one_hot, weights = weights)
+    elif loss_type == "softmax":
+        pred = logits.softmax(dim = 1)
+        cb_loss = F.binary_cross_entropy(input = pred, target = labels_one_hot, weight = weights)
+    return cb_loss
+```
+
+Then add necessary parameters for the loss function. For details you can see the <a href="https://arxiv.org/pdf/1901.05555.pdf">paper</a>. 
+```
+no_of_classes = 2
+beta = 0.9999
+gamma = 2.0
+samples_per_cls = [35,15]   #class sample number in one batch
+loss_type = "softmax"
+```
+Lastly don't forget to change loss function by adding :
+```
+outputs = model()   #make sure model returns logits 
+loss = CB_loss(labels, outputs, samples_per_cls, no_of_classes,loss_type, beta, gamma)
+```
 
