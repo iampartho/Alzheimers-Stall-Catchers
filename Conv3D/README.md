@@ -274,7 +274,7 @@ Then add necessary parameters for the loss function. For details you can see the
 no_of_classes = 2
 beta = 0.9999
 gamma = 2.0
-samples_per_cls = [35,15]   #class sample number in one batch
+samples_per_cls = [35,15]   #class sample number in one mini batch(For example we have 70:30 ratio data of mini batch_size of 50)
 loss_type = "softmax"
 ```
 Lastly don't forget to change loss function by adding :
