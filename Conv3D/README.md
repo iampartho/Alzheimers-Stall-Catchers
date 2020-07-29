@@ -18,6 +18,9 @@ Following table summarizes all the change in pipeline
 |10 | RESNET101 | Adam lr=5e-4 w_d=8e-4 | CrossEntropy | 32 X 64 X 64 | Point Cloud Mask applied to Imageset, Reshape to fit to dimension, Augmentation | Manual selection of LR, WD, Multistage Training |
 | 11 | '' | '' | '' | 32 X 64 X 64 | -- | Using Automatic Mixed Precision |
 | 12 | '' | '' | Class Balance Weight | 32 X 64 X 64 | -- | -- |
+| 13 | EfficientNet 3D | '' | '' | 32 X 64 X 64 | -- | -- |
+| 14 | Wide_Resnet 3D | '' | '' | 32 X 64 X 64 | -- | -- |
+| 15 | DenseNet 3D | '' | '' | 32 X 64 X 64 | -- | -- |
 
 - **Serial 1**  (Baseline Pipeline) : [3DptCloudofAlzheimer_Baseline.ipynb](3DptCloudofAlzheimer_Baseline.ipynb) contains the baseline pipeline code
 - **Serial 2** : [3DptCloudofAlzheimer_modified.ipynb](3DptCloudofAlzheimer_modified.ipynb) contains that modified code
@@ -281,5 +284,28 @@ Lastly don't forget to change loss function by adding :
 ```
 outputs = model()   #make sure model returns logits 
 loss = CB_loss(labels, outputs, samples_per_cls, no_of_classes,loss_type, beta, gamma)
+```
+
+- **Serial 13** :
+To use efficientNet 3D we use code from <a href="https://github.com/ubamba98/EfficientNet-PyTorch_3DConv">this</a> repo. 
+```
+from efficientnet import EfficientNet 
+model = EfficientNet.from_name('efficientnet-b0')    #can use b0-07
+```
+
+- **Serial 14** :
+To use Wide_ResNet 3D code snippt will change as following :
+```
+import wide_resnet
+model = wide_resnet.wide_resnet50(num_classes=2 , k=1,
+                                         sample_size=64, sample_duration=32,
+                                         last_fc=True)
+```
+
+- **Serial 15** :
+If you want to use deeper net then certainly you should try DenseNet's variant of 3D model. Code snippt will change as following :
+```
+from densenet import generate_model
+model = generate_model(model_depth = 169 , num_classes = 2)     #to use variant DenseNet 169 use model_depth = 169
 ```
 
