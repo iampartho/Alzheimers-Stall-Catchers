@@ -4,7 +4,7 @@
 
 > Team **BUET Synapticans** under M-Health Research Lab, Department of Biomedical Engineering, Bangladesh University of Engineering and Technology
 
-> Placed **7th** on private leaderboard with an MCC score of 0.73
+> Placed **7th** on private leaderboard with an MCC score of 0.7392
 
 ## Table of Contents
 
@@ -33,11 +33,11 @@ The final submission of the competition was done on the ensemble of best models 
 
 The repository encapsulates the work of all the team members during the competition. The subdirectories contaiin all the major works towards the final submission.
     
- - <a href="">Dataset Visualization and Processing</a> contains code for visualizing the given dataset (video, images with ROI(region of interest) extracted, point cloud of blood vessels, grayscale ROI frame extraction, point cloud extraction)
- - <a href="">Image Based Approach</a> contains classification scheme based on image frames extracted from each sample video ROI.
- - <a href="">Point Cloud Based Approach</a> contains classification scheme based on point cloud of the given blood vessels present in sample videos.
- - <a href="">Final Ensemble of Models</a> contains the ensemble scheme of the best models from the previously mentioned two approaches.
- - <a href="">Other Approaches</a> contains solution approaches tried during the competition that did not perform expectedly, but has been included in the repository for future reference.
+ - <a href="https://github.com/ClockWorkKid/Alzheimers-Stall-Catchers/tree/master/Dataset%20Visualization%20and%20Processing">Dataset Visualization and Processing</a> contains code for visualizing the given dataset (video, images with ROI(region of interest) extracted, point cloud of blood vessels, grayscale ROI frame extraction, point cloud extraction)
+ - <a href="https://github.com/ClockWorkKid/Alzheimers-Stall-Catchers/tree/master/Image%20Based%20Approach">Image Based Approach</a> contains classification scheme based on image frames extracted from each sample video ROI.
+ - <a href="https://github.com/ClockWorkKid/Alzheimers-Stall-Catchers/tree/master/Point%20Cloud%20Based%20Approach">Point Cloud Based Approach</a> contains classification scheme based on point cloud of the given blood vessels present in sample videos.
+ - <a href="https://github.com/ClockWorkKid/Alzheimers-Stall-Catchers/tree/master/Final%20Ensemble%20of%20Models">Final Ensemble of Models</a> contains the ensemble scheme of the best models from the previously mentioned two approaches.
+ - <a href="https://github.com/ClockWorkKid/Alzheimers-Stall-Catchers/tree/master/Other%20Approaches">Other Approaches</a> contains solution approaches tried during the competition that did not perform expectedly, but has been included in the repository for future reference.
 
 # References
 
