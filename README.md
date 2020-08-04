@@ -9,7 +9,7 @@
 ## Table of Contents
 
 - [Overview](#competition-overview)
-- [Data Visualization](#data Visualization)
+- [Data Visualization](#data-Visualization)
 - [Solution Approach](#solution-approach)
 - [Repository Overview](#repository-overview)
 - [References](#reference)
