@@ -9,6 +9,7 @@
 ## Table of Contents
 
 - [Overview](#competition-overview)
+- [Data Visualization](#data Visualization)
 - [Solution Approach](#solution-approach)
 - [Repository Overview](#repository-overview)
 - [References](#reference)
@@ -19,13 +20,21 @@
 Head on to the <a href="https://www.drivendata.org/competitions/65/clog-loss-alzheimers-research/page/207/">Alzheimers Stall Catchers Competition</a> website for competition details.
 ![Base Image](screenshots/home.png)
 
+# Data Visualization
+This is a competition of constructing a binary classifier. Model has to predict whether the given data is Stalled or Non-stalled. We think to prepare data in two ways to help model differentiating between stalled and non-stalled. 
+From the perspective of point cloud, one can easily visualize and differentiate them. For instance :
+A Stalled Sample : ![Stalled sample](screenshots/stalled.JPG)
+
+A Non-Stalled Sample : ![Non-Stalled sample](screenshots/nonstalled.JPG)
+
+
 # Solution Approach
 
 The proposed solution method primarily comprises of two major pipelines:
  1. Image based approach 
  2. Point cloud based approach
  
-Several deep learning classifier models have tested in both approaches, including Resnet, Densenet, Resnet 3D and several other 3D convolution based models. Implementation details on any model tried and tested on the dataset has been further discussed in detail in the sub directories of the repository.
+Several deep learning classifier models have tested in both approaches, including ResNet, DenseNet, ResNet 3D and several other 3D convolution based models. Implementation details on any model tried and tested on the dataset has been further discussed in detail in the sub directories of the repository. In 'Point Cloud Based Approach' you can find all detailed code for point cloud based approach codes and in 'Image Based Approach' you can find all detailed code for image based approach.
 
 The final submission of the competition was done on the ensemble of best models of the two major pipelines. Ensemble scheme has also been explained in detail.
 
