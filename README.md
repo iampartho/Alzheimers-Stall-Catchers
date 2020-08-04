@@ -2,50 +2,53 @@
 
 > <a href="https://www.drivendata.org/competitions/">Driven-Data</a> Biomedical Research Competition 
 
-> Work in progress
+> Team **BUET Synapticans** under M-Health Research Lab, Department of Biomedical Engineering, Bangladesh University of Engineering and Technology
+
+> Placed **7th** on private leaderboard with an MCC score of 0.73
 
 ## Table of Contents
 
-- [Project Overview](#overview)
-- [Algorithm](#algorithm)
-- [Training Model](#training)
-- [Testing Model](#testing)
-- [Discussion](#discussion)
+- [Overview](#competition-overview)
+- [Solution Approach](#solution-approach)
+- [Repository Overview](#repository-overview)
 - [References](#reference)
 - [Team](#team)
 
-## Project Overview
+# Competition Overview
 
 Head on to the <a href="https://www.drivendata.org/competitions/65/clog-loss-alzheimers-research/page/207/">Alzheimers Stall Catchers Competition</a> website for competition details.
 ![Base Image](screenshots/home.png)
 
-## Algorithm
+# Solution Approach
 
-Partho and Akib are currently working based on their previous work on VIP cup 2019
+The proposed solution method primarily comprises of two major pipelines:
+ 1. Image based approach 
+ 2. Point cloud based approach
+ 
+Several deep learning classifier models have tested in both approaches, including Resnet, Densenet, Resnet 3D and several other 3D convolution based models. Implementation details on any model tried and tested on the dataset has been further discussed in detail in the sub directories of the repository.
 
-## Training Model
+The final submission of the competition was done on the ensemble of best models of the two major pipelines. Ensemble scheme has also been explained in detail.
 
-- empty
+# Repository Overview
 
-## Testing Model
+The repository encapsulates the work of all the team members during the competition. The subdirectories contaiin all the major works towards the final submission.
+    
+ - <a href="">Dataset Visualization and Processing</a> contains code for visualizing the given dataset (video, images with ROI(region of interest) extracted, point cloud of blood vessels, grayscale ROI frame extraction, point cloud extraction)
+ - <a href="">Image Based Approach</a> contains classification scheme based on image frames extracted from each sample video ROI.
+ - <a href="">Point Cloud Based Approach</a> contains classification scheme based on point cloud of the given blood vessels present in sample videos.
+ - <a href="">Final Ensemble of Models</a> contains the ensemble scheme of the best models from the previously mentioned two approaches.
+ - <a href="">Other Approaches</a> contains solution approaches tried during the competition that did not perform expectedly, but has been included in the repository for future reference.
 
-- empty
+# References
 
-## Discussion
+- (empty)
 
-- empty
+# Team
 
-## References
-
-- empty
-
-## Team
-
-- Partho
-- Akib
-- Swapnil
-- Rony
-- Sayeed
+- Partho Ghosh
+- <a href="https://github.com/aia39">Md. Abrar Istiak Akib</a>
+- Swapnil Saha
+- <a href="https://github.com/ClockWorkKid">Mir Sayeed Mohammad</a>
 
 
 
