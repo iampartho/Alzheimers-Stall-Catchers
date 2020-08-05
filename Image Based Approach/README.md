@@ -26,9 +26,35 @@ We took two sets of 40 frames, one is going in forward manner and other is going
 ## Dataset with rotation
 
 The cell of code is used to train our final model. The data used here is the RGB data rather than the previous grayscale data. The code used to extract these frames is [this.](https://github.com/iampartho/Alzheimers-Stall-Catchers/blob/master/Image%20Based%20Approach/extract_frames_new.py) The basic difference between the previous data and this data is that we saw that after croping out the region of interest from each video frame there were many pixels (which were basically don't care pixels) which were black. And since black is one of a significant colour for our classification so therefore we coloured these don't care pixel as raw blue to distinguish it from the actual black pixel inside the region of interest. This hypothesis of ours seems to give a great jump in the leaderboard. Dataset preperation is quite similar as we discussed in the previous section. The one basic change is the added rotation of 7 particular degrees with a probability of 0.5. 
-** Following is a sample of RGB image frame **
+**Following is a sample of RGB image frame**
+
 ![RGB image](https://github.com/iampartho/Alzheimers-Stall-Catchers/blob/master/Image%20Based%20Approach/50.jpg)
 
 ## Model.py
 
-This cell uses 
+This cell is the model architecture for backbone "[resnet(2+1)d]"(https://arxiv.org/abs/1711.11248). 
+**Following figure shows the workflow of the architecture**
+![Model Architecture](https://github.com/iampartho/Alzheimers-Stall-Catchers/blob/master/Image%20Based%20Approach/Model%20architecture.jpg)
+
+## Model (Big architecture)
+
+This cell is the model architecture for backbone "[Resnext-101]"(https://arxiv.org/abs/1711.09577).
+
+## Balance Batch
+
+This cell of code create a balance batch by over-sampling in per mini-batch. It was an integral part of our multi-phase training.
+
+## Ranger optimizer
+
+The cell is used to use [Ranger optimizer](https://github.com/lessw2020/Ranger-Deep-Learning-Optimizer). This optimizer is used to train the models to get further boost in the **MCC**.
+
+## Training
+This cell of code is used to train the algorithm. Since we used colab to train all of our model therefore we have to train for multiple phases. Some of the key points in our training were,
+* Balance-batch
+* Learning Rate = 0.0001 (No scheduling)
+* Adam and Ranger optimizer used in a sequential way
+* Batch-size = 8
+* Used gradiend accumulation technique with an accumulation step of 8
+* Optimized for best validation MCC
+* Training and validation set both have a 70:30 non-stall to stall instance distribution 
+
