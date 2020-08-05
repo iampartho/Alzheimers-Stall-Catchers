@@ -22,7 +22,7 @@ This is the intial dataset preperation code we used. From the video we extract j
 We took two sets of 40 frames, one is going in forward manner and other is going in backward manner. The dataset will return two set of 40 frames(one in forward manner and another in backward manner) 
 **Following is sample of a single image frame which was primarily used to train the network**
 
-                    ![Grayscle image](https://github.com/iampartho/Alzheimers-Stall-Catchers/blob/master/Image%20Based%20Approach/51.jpg)
+![Grayscle image](https://github.com/iampartho/Alzheimers-Stall-Catchers/blob/master/Image%20Based%20Approach/51.jpg)
 
 ## Dataset with rotation
 
