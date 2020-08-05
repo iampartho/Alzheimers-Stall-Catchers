@@ -23,7 +23,9 @@ We took two sets of 40 frames, one is going in forward manner and other is going
 
 **Following is sample of a single image frame which was primarily used to train the network**
 
-<center> ![Grayscle image](https://github.com/iampartho/Alzheimers-Stall-Catchers/blob/master/Image%20Based%20Approach/51.jpg)</center>
+<div style="text-align:center"><img src="https://github.com/iampartho/Alzheimers-Stall-Catchers/blob/master/Image%20Based%20Approach/51.jpg" /></div>
+
+![Grayscle image](https://github.com/iampartho/Alzheimers-Stall-Catchers/blob/master/Image%20Based%20Approach/51.jpg)
 
 ## Dataset with rotation
 
