@@ -35,7 +35,7 @@ The cell of code is used to train our final model. The data used here is the RGB
 
 ## Model.py
 
-This cell is the model architecture for backbone "[resnet(2+1)d]"(https://arxiv.org/abs/1711.11248). 
+This cell is the model architecture for backbone "[resnet(2+1)d](https://arxiv.org/abs/1711.11248)". 
 **Following figure shows the workflow of the architecture**
 ![Model Architecture](https://github.com/iampartho/Alzheimers-Stall-Catchers/blob/master/Image%20Based%20Approach/Model%20architecture.jpg)
 
