@@ -54,7 +54,7 @@ The repository encapsulates the work of all the team members during the competit
 
 # Team
 
-- Partho Ghosh
+- <a href="https://github.com/iampartho">Partho Ghosh</a>
 - <a href="https://github.com/aia39">Md. Abrar Istiak Akib</a>
 - Swapnil Saha
 - <a href="https://github.com/ClockWorkKid">Mir Sayeed Mohammad</a>
