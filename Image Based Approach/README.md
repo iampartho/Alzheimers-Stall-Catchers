@@ -20,6 +20,7 @@ This is the intial dataset preperation code we used. From the video we extract j
 * Then go back 10 frmaes from there
 * And sampled 40 frames from that point
 We took two sets of 40 frames, one is going in forward manner and other is going in backward manner. The dataset will return two set of 40 frames(one in forward manner and another in backward manner) 
+
 **Following is sample of a single image frame which was primarily used to train the network**
 
 ![Grayscle image](https://github.com/iampartho/Alzheimers-Stall-Catchers/blob/master/Image%20Based%20Approach/51.jpg)
@@ -27,6 +28,7 @@ We took two sets of 40 frames, one is going in forward manner and other is going
 ## Dataset with rotation
 
 The cell of code is used to train our final model. The data used here is the RGB data rather than the previous grayscale data. The code used to extract these frames is [this.](https://github.com/iampartho/Alzheimers-Stall-Catchers/blob/master/Image%20Based%20Approach/extract_frames_new.py) The basic difference between the previous data and this data is that we saw that after croping out the region of interest from each video frame there were many pixels (which were basically don't care pixels) which were black. And since black is one of a significant colour for our classification so therefore we coloured these don't care pixel as raw blue to distinguish it from the actual black pixel inside the region of interest. This hypothesis of ours seems to give a great jump in the leaderboard. Dataset preperation is quite similar as we discussed in the previous section. The one basic change is the added rotation of 7 particular degrees with a probability of 0.5. 
+
 **Following is a sample of RGB image frame**
 
 ![RGB image](https://github.com/iampartho/Alzheimers-Stall-Catchers/blob/master/Image%20Based%20Approach/50.jpg)
