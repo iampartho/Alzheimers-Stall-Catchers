@@ -51,7 +51,7 @@ The repository encapsulates the work of all the team members during the competit
 
 # Getting Started
 
-* Point Cloud Based Approach
+* # Point Cloud Based Approach
 - Firstly run the code to generate point cloud from the video data. Code can be found in 'Dataset Visualization and Processing' folder.
 ```bash
 python dataset_generator.py
