@@ -1,6 +1,6 @@
 Point Cloud based approach is illustrated below
 
-![Base Image](screenshots/Modeldesign.jpg)
+![Base Image](Modeldesign.jpg)
 
 ## Training Hyperparameters
 
