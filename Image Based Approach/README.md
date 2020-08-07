@@ -61,4 +61,4 @@ This cell of code is used to train the algorithm. Since we used colab to train a
 * Used gradiend accumulation technique with an accumulation step of 8
 * Optimized for best validation MCC
 * Training and validation set both have a 70:30 non-stall to stall instance distribution 
-
+**Note:** At the starting of the main code block of the training cell there are some variable declaration which determines the image size, dataset directory, sequence length for each video etc. Look at the comments attached to each variable that will give insights about the variable's work
