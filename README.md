@@ -51,7 +51,7 @@ The repository encapsulates the work of all the team members during the competit
 
 # Getting Started
 
-i) # Point Cloud Based Approach
+## i) Point Cloud Based Approach
 - Firstly run the code to generate point cloud from the video data. Code can be found in 'Dataset Visualization and Processing' folder.
 ```bash
 python dataset_generator.py
@@ -60,7 +60,7 @@ python dataset_generator.py
 
 - Lastly, for inferencing you have to run <a href="https://github.com/ClockWorkKid/Alzheimers-Stall-Catchers/blob/master/Point%20Cloud%20Based%20Approach/Pointcloud_inference_resnet_densenet.ipynb">notebook</a> from 'Point Cloud Based Approach' folder for DenseNet, ResNet model. Or run this <a href="https://github.com/ClockWorkKid/Alzheimers-Stall-Catchers/blob/master/Point%20Cloud%20Based%20Approach/Inference_3DptCloud.ipynb">notebook</a> for ResNext, Wide_ResNet model inference. All the notebooks were used in google colab. So you can modify it to use in your local machine. 
 
-ii) # Image Based Approach
+## ii) Image Based Approach
 - First create a folder naming your dataset (e.g "micro") and keep all the videos in that folder.
 - Then place [this](https://github.com/iampartho/Alzheimers-Stall-Catchers/blob/master/Image%20Based%20Approach/extract_frames_new.py) code on the directory of your dataset folder and open terminal and run the following code
 ```
