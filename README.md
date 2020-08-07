@@ -12,6 +12,7 @@
 - [Data Visualization](#data-Visualization)
 - [Solution Approach](#solution-approach)
 - [Repository Overview](#repository-overview)
+- [Getting Started](#getting-started)
 - [References](#reference)
 - [Team](#team)
 
@@ -47,6 +48,17 @@ The repository encapsulates the work of all the team members during the competit
  - <a href="https://github.com/ClockWorkKid/Alzheimers-Stall-Catchers/tree/master/Point%20Cloud%20Based%20Approach">Point Cloud Based Approach</a> contains classification scheme based on point cloud of the given blood vessels present in sample videos.
  - <a href="https://github.com/ClockWorkKid/Alzheimers-Stall-Catchers/tree/master/Final%20Ensemble%20of%20Models">Final Ensemble of Models</a> contains the ensemble scheme of the best models from the previously mentioned two approaches.
  - <a href="https://github.com/ClockWorkKid/Alzheimers-Stall-Catchers/tree/master/Other%20Approaches">Other Approaches</a> contains solution approaches tried during the competition that did not perform expectedly, but has been included in the repository for future reference.
+
+# Getting Started
+
+* # Point Cloud Based Approach
+- Firstly run the code to generate point cloud from the video data. Code can be found in 'Dataset Visualization and Processing' folder.
+```bash
+python dataset_generator.py
+```
+- Then to train you have to run the <a href="https://github.com/ClockWorkKid/Alzheimers-Stall-Catchers/blob/master/Point%20Cloud%20Based%20Approach/Pointcloud_training_resnet_densenet.ipynb">notebook</a> from 'Point Cloud Based Approach' folder for DenseNet, ResNet model. Or run this <a href="https://github.com/ClockWorkKid/Alzheimers-Stall-Catchers/blob/master/Point%20Cloud%20Based%20Approach/Train_3DptCloud_clsballoss.ipynb">notebook</a> for ResNext, Wide_ResNet model. 
+
+- Lastly, for inferencing you have to run <a href="https://github.com/ClockWorkKid/Alzheimers-Stall-Catchers/blob/master/Point%20Cloud%20Based%20Approach/Pointcloud_inference_resnet_densenet.ipynb">notebook</a> from 'Point Cloud Based Approach' folder for DenseNet, ResNet model. Or run this <a href="https://github.com/ClockWorkKid/Alzheimers-Stall-Catchers/blob/master/Point%20Cloud%20Based%20Approach/Inference_3DptCloud.ipynb">notebook</a> for ResNext, Wide_ResNet model inference. All the notebooks were used in google colab. So you can modify it to use in your local machine. 
 
 # References
 
