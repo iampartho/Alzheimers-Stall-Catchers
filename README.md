@@ -51,6 +51,7 @@ The repository encapsulates the work of all the team members during the competit
 
 # Getting Started
 
+
 ## i) Point Cloud Based Approach
 - Firstly run the code to generate point cloud from the video data. Code can be found in 'Dataset Visualization and Processing' folder.
 ```bash
@@ -70,6 +71,7 @@ python extract_frames_new.py --dataset_name micro
 - Make a zip of that folder and upload it to your **google drive** (in order to use the [training notebook](https://github.com/iampartho/Alzheimers-Stall-Catchers/blob/master/Image%20Based%20Approach/training_notebook.ipynb) and train our algorithm in google colab)
 - Create some folds of your own or use [this](https://github.com/iampartho/Alzheimers-Stall-Catchers/tree/master/Image%20Based%20Approach/traintestlist) folder for either reference or use. Then make a zip of that folder and upload it to your google drive
 - Finally use [this](https://github.com/iampartho/Alzheimers-Stall-Catchers/blob/master/Image%20Based%20Approach/training_notebook.ipynb) notebook and google colab to conduct your training. Details of every cell of the training code can be found [here](https://github.com/iampartho/Alzheimers-Stall-Catchers/blob/master/Image%20Based%20Approach/README.md)
+
 
 
 # References
