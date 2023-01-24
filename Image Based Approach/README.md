@@ -11,7 +11,7 @@ This is a dataset generator class build on top of the pytoch Dataset class. In t
 ![Preprocessed image](https://github.com/iampartho/Alzheimers-Stall-Catchers/blob/master/Image%20Based%20Approach/29.jpg)
 
 
-## ## Model
+## Model
 
 This cell defines the encoder with it's forward propagation function. The model used for our experiment was "[resnet(2+1)d](https://arxiv.org/abs/1711.11248)". We trained this model with out preprocessed data.
 
